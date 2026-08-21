@@ -14,3 +14,5 @@ data.db-journal
 
 *.log
 .DS_Store
+backend/scripts/__pycache__/
+backend/test_reports/
