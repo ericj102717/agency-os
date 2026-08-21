@@ -100,14 +100,23 @@ from feedback_engine import FeedbackEngine
 
 app = FastAPI(title="Agency OS — Unified Command Center", version="1.0.0")
 
+_allowed_origins = [
+    "https://commandcenter-hq.pplx.app",
+    "https://mission-control-app.pplx.app",
+    "https://mission-control-hq.pplx.app",
+    "https://www.perplexity.ai",
+    "http://localhost:5000",
+    "http://127.0.0.1:5000",
+    "http://localhost:5173",
+]
+# Allow overriding origins via env var (comma-separated)
+_extra_origins = os.environ.get("ALLOWED_ORIGINS", "")
+if _extra_origins:
+    _allowed_origins.extend([o.strip() for o in _extra_origins.split(",") if o.strip()])
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://commandcenter-hq.pplx.app",
-        "https://www.perplexity.ai",
-        "http://localhost:5000",
-        "http://127.0.0.1:5000",
-    ],
+    allow_origins=_allowed_origins,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
     allow_credentials=True,

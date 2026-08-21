@@ -4,7 +4,17 @@ import type {
   SummaryResponse,
 } from "@shared/types";
 
-const API_BASE = "__PORT_5000__".startsWith("__") ? "http://localhost:5000" : "__PORT_5000__";
+// API_BASE resolution priority:
+//   1. VITE_API_BASE_URL env var (set at build time for Vercel/production)
+//   2. __PORT_5000__ sentinel (rewritten by pplx deploy_website for previews)
+//   3. localhost fallback (dev mode)
+const _sentinel = "__PORT_5000__";
+const _envBase = import.meta.env.VITE_API_BASE_URL as string | undefined;
+const API_BASE = _envBase
+  ? _envBase
+  : _sentinel.startsWith("__")
+    ? "http://localhost:5000"
+    : _sentinel;
 export { API_BASE };
 
 // --- Write key management ---
