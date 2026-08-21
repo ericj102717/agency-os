@@ -59,7 +59,7 @@ if [ -n "${DATABASE_URL:-}" ]; then
   (cd backend && $PY -c "import db; db.init_db()" 2>&1 || echo "Schema init warning (may be expected)")
 
   echo "Checking for data migration..."
-  (cd backend && $PY migrate_to_postgres.py 2>&1 || echo "Migration skipped")
+  (cd backend && $PY scripts/migrate_to_postgres.py 2>&1 || echo "Migration skipped")
 fi
 
 # Verify dist/index.cjs exists

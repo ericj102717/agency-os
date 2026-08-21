@@ -152,13 +152,6 @@ def check_admin_auth(x_admin_key: str = FastHeader(default="", alias="X-Admin-Ke
         _health_monitor.record_event("auth", "admin_auth_failed", "WARNING", "Admin authorization failed")
         raise HTTPException(status_code=403, detail="Admin authorization required")
 
-def safe_import(module_name, fallback=None):
-    """Safely import a module, return fallback if it fails."""
-    try:
-        return __import__(module_name)
-    except Exception:
-        return fallback
-
 def get_phase1_data() -> Dict[str, Any]:
     """Lead Follow-Up Agent data."""
     try:
@@ -475,7 +468,6 @@ def get_action_queue() -> List[Dict[str, Any]]:
             })
 
         # 3. Stale leads (leads in 'new' stage that haven't been contacted in 3+ days)
-        from datetime import timedelta
         stale_leads = []
         for c in contacts:
             if c.get("pipeline_stage") == "new" and c.get("contact_type") == "lead":
@@ -578,7 +570,7 @@ def get_compliance_summary() -> Dict[str, Any]:
 def get_charts_data() -> Dict[str, Any]:
     """Pre-computed chart data for the frontend."""
     import csv
-    from collections import Counter, defaultdict
+    from collections import Counter
     today = date(2026, 8, 16)
     charts: Dict[str, Any] = {}
 
@@ -789,7 +781,7 @@ def get_executive_data() -> Dict[str, Any]:
             }
         if _phase7 not in _sys.path:
             _sys.path.insert(0, _phase7)
-        from executive_data_adapter import get_executive_schema, get_agent_summaries
+        from executive_data_adapter import get_executive_schema  # get_agent_summaries removed (unused)
         from daily_priority_engine import generate_priorities
         from business_health_score import compute_health_score
         from escalation_engine import generate_escalations
@@ -880,7 +872,7 @@ def get_what_changed_data() -> Dict[str, Any]:
                 "message": "Not enough data yet. Import data and run daily comparisons to detect changes.",
             }
 
-        from what_changed_data_adapter import get_current_state, get_comparison_periods
+        # get_current_state and get_comparison_periods removed (unused — detect_all_changes handles internally)
         from change_detection_engine import detect_all_changes
         from business_movement_score import compute_movement_score
         from exception_detection_engine import detect_exceptions
@@ -1888,16 +1880,16 @@ try:
     from action_ledger import get_actions as _get_actions
     from action_ledger import complete_action as _complete_action
     from action_ledger import get_action_summary as _action_summary
-    from action_ledger import get_completed_entity_types as _completed_types
+    from action_ledger import get_completed_entity_types as _completed_types  # noqa: F401
     from action_ledger import record_outcome as _record_outcome
     from action_ledger import snooze_action as _snooze_action
     from action_ledger import dismiss_action as _dismiss_action
-    from action_ledger import get_snoozed_returning as _snoozed_returning
+    from action_ledger import get_snoozed_returning as _snoozed_returning  # noqa: F401
     from action_ledger import get_action_history as _action_history
     from action_ledger import get_performance_metrics as _perf_metrics
-    from action_ledger import consolidate_duplicates as _consolidate_dupes
+    from action_ledger import consolidate_duplicates as _consolidate_dupes  # noqa: F401
     from action_ledger import create_follow_up as _create_follow_up
-    from action_ledger import get_pending_follow_ups as _pending_follow_ups
+    from action_ledger import get_pending_follow_ups as _pending_follow_ups  # noqa: F401
     from action_ledger import get_action_center_data as _action_center_data
     _ledger_available = True
 except Exception as e:
@@ -1907,10 +1899,10 @@ except Exception as e:
 # Action Execution Engine (smart action buttons, AI drafts, action cards)
 try:
     from action_execution_engine import get_smart_actions as _smart_actions
-    from action_execution_engine import prepare_action_context as _prepare_action_ctx
+    from action_execution_engine import prepare_action_context as _prepare_action_ctx  # noqa: F401
     from action_execution_engine import draft_follow_up_message as _draft_message
-    from action_execution_engine import is_action_executable as _is_executable
-    from action_execution_engine import generate_action_card as _gen_action_card
+    from action_execution_engine import is_action_executable as _is_executable  # noqa: F401
+    from action_execution_engine import generate_action_card as _gen_action_card  # noqa: F401
     _engine_available = True
 except Exception as e:
     _engine_available = False
