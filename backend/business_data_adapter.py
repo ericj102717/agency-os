@@ -21,15 +21,16 @@ import data_store
 
 # Demo data imports (fallback)
 try:
-    sys.path.insert(0, "/home/user/workspace/phase6")
-    from crm_data_quality_auditor import DEMO_CONTACTS
+    from pipeline_b_data_bridge import get_contacts as _get_contacts
+    DEMO_CONTACTS = _get_contacts()
     _demo_contacts_available = True
 except Exception:
     _demo_contacts_available = False
     DEMO_CONTACTS = []
 
 try:
-    from pipeline_analytics import DEMO_OPPORTUNITIES
+    from pipeline_b_data_bridge import get_opportunities as _get_opps
+    DEMO_OPPORTUNITIES = _get_opps()
     _demo_opps_available = True
 except Exception:
     _demo_opps_available = False

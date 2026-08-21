@@ -158,8 +158,8 @@ def get_phase1_data() -> Dict[str, Any]:
         import business_data_adapter
         all_contacts = business_data_adapter.get_contacts()
         if not all_contacts:
-            from crm_data_quality_auditor import DEMO_CONTACTS
-            all_contacts = DEMO_CONTACTS
+            from pipeline_b_data_bridge import get_contacts as _get_contacts
+            all_contacts = _get_contacts()
         leads = [c for c in all_contacts if c.get("contact_type") == "lead"]
         prospects = [c for c in all_contacts if c.get("contact_type") == "prospect"]
         clients = [c for c in all_contacts if c.get("contact_type") == "client"]
@@ -334,12 +334,25 @@ def get_phase5_data() -> Dict[str, Any]:
 def get_phase6_data() -> Dict[str, Any]:
     """CRM Management Agent data."""
     try:
-        from crm_data_quality_auditor import DEMO_CONTACTS, audit_all_contacts
-        from duplicate_detector import DEMO_CONTACTS as DUP_CONTACTS, detect_duplicates
-        from pipeline_analytics import DEMO_OPPORTUNITIES, calculate_pipeline_analytics
-        from contact_lifecycle_manager import DEMO_CONTACTS as LC_CONTACTS, find_lifecycle_alerts
-        from task_appointment_auditor import DEMO_TASKS, DEMO_APPOINTMENTS, audit_tasks, audit_appointments
-        from tag_field_manager import DEMO_GHL_TAGS, DEMO_GHL_FIELDS, audit_tags, audit_fields
+        from intelligence_backend import (
+            crm_audit_all_contacts as audit_all_contacts,
+            crm_detect_duplicates as detect_duplicates,
+            crm_calculate_pipeline_analytics as calculate_pipeline_analytics,
+            crm_find_lifecycle_alerts as find_lifecycle_alerts,
+            crm_audit_tasks as audit_tasks,
+            crm_audit_appointments as audit_appointments,
+            crm_audit_tags as audit_tags,
+            crm_audit_fields as audit_fields,
+        )
+        from pipeline_b_data_bridge import get_contacts, get_opportunities, get_tasks, get_appointments
+        DEMO_CONTACTS = get_contacts()
+        DUP_CONTACTS = get_contacts()
+        DEMO_OPPORTUNITIES = get_opportunities()
+        LC_CONTACTS = get_contacts()
+        DEMO_TASKS = get_tasks()
+        DEMO_APPOINTMENTS = get_appointments()
+        DEMO_GHL_TAGS = []
+        DEMO_GHL_FIELDS = []
         from cross_agent_sync_checker import run_sync_checks
 
         today = date(2026, 8, 16)
@@ -521,12 +534,12 @@ def get_action_queue() -> List[Dict[str, Any]]:
 def get_pipeline_summary() -> Dict[str, Any]:
     """Revenue pipeline summary across phases."""
     try:
-        from pipeline_analytics import calculate_pipeline_analytics
+        from intelligence_backend import crm_calculate_pipeline_analytics as calculate_pipeline_analytics
         import business_data_adapter
         opps = business_data_adapter.get_opportunities()
         if not opps:
-            from pipeline_analytics import DEMO_OPPORTUNITIES
-            opps = DEMO_OPPORTUNITIES
+            from pipeline_b_data_bridge import get_opportunities as _get_opps
+            opps = _get_opps()
         today = date(2026, 8, 17)
         pipeline = calculate_pipeline_analytics(opps, today)
         s = pipeline["summary"]
@@ -576,12 +589,12 @@ def get_charts_data() -> Dict[str, Any]:
 
     # Pipeline stages for funnel
     try:
-        from pipeline_analytics import calculate_pipeline_analytics
+        from intelligence_backend import crm_calculate_pipeline_analytics as calculate_pipeline_analytics
         import business_data_adapter
         opps = business_data_adapter.get_opportunities()
         if not opps:
-            from pipeline_analytics import DEMO_OPPORTUNITIES
-            opps = DEMO_OPPORTUNITIES
+            from pipeline_b_data_bridge import get_opportunities as _get_opps
+            opps = _get_opps()
         pipe = calculate_pipeline_analytics(opps, today)
         stages_order = ["new", "contacted", "qualified", "consultation_scheduled", "application_started", "closed_won", "closed_lost"]
         charts["pipeline_funnel"] = [{"stage": s, "label": s.replace("_", " ").title(), "count": pipe.get("by_stage", {}).get(s, 0)} for s in stages_order]
@@ -615,7 +628,9 @@ def get_charts_data() -> Dict[str, Any]:
 
     # CRM issue severity (stacked bar)
     try:
-        from crm_data_quality_auditor import DEMO_CONTACTS as DQ, audit_all_contacts
+        from intelligence_backend import crm_audit_all_contacts as audit_all_contacts
+        from pipeline_b_data_bridge import get_contacts as _get_contacts
+        DQ = _get_contacts()
         dq = audit_all_contacts(DQ, today)
         charts["crm_issue_severity"] = [
             {"label": "Critical", "count": dq.get("critical_count", 0), "color": "#dc2626"},
@@ -629,7 +644,9 @@ def get_charts_data() -> Dict[str, Any]:
 
     # Duplicate confidence donut
     try:
-        from duplicate_detector import DEMO_CONTACTS as DC, detect_duplicates
+        from intelligence_backend import crm_detect_duplicates as detect_duplicates
+        from pipeline_b_data_bridge import get_contacts as _get_contacts2
+        DC = _get_contacts2()
         dups = detect_duplicates(DC)
         conf = Counter(d.get("match_type", "LOW") for d in dups if isinstance(d, dict))
         charts["duplicates_by_confidence"] = [{"label": k, "count": v} for k, v in conf.items()]
@@ -638,7 +655,9 @@ def get_charts_data() -> Dict[str, Any]:
 
     # Tag/field health
     try:
-        from tag_field_manager import DEMO_GHL_TAGS, DEMO_GHL_FIELDS, audit_tags, audit_fields
+        from intelligence_backend import crm_audit_tags as audit_tags, crm_audit_fields as audit_fields
+        DEMO_GHL_TAGS = []
+        DEMO_GHL_FIELDS = []
         tags = audit_tags(DEMO_GHL_TAGS)
         fields = audit_fields(DEMO_GHL_FIELDS)
         charts["tag_field_health"] = [
@@ -653,7 +672,10 @@ def get_charts_data() -> Dict[str, Any]:
 
     # Task/appointment issues
     try:
-        from task_appointment_auditor import DEMO_TASKS, DEMO_APPOINTMENTS, audit_tasks, audit_appointments
+        from intelligence_backend import crm_audit_tasks as audit_tasks, crm_audit_appointments as audit_appointments
+        from pipeline_b_data_bridge import get_tasks as _get_tasks, get_appointments as _get_appts
+        DEMO_TASKS = _get_tasks()
+        DEMO_APPOINTMENTS = _get_appts()
         tasks = audit_tasks(DEMO_TASKS, today)
         appts = audit_appointments(DEMO_APPOINTMENTS, today)
         task_types = Counter(i.get("type", "unknown") for i in tasks.get("issues", []))
@@ -717,10 +739,17 @@ def get_charts_data() -> Dict[str, Any]:
 
     # Agent health gauges
     try:
-        from crm_data_quality_auditor import DEMO_CONTACTS, audit_all_contacts
-        from pipeline_analytics import DEMO_OPPORTUNITIES, calculate_pipeline_analytics
-        from contact_lifecycle_manager import DEMO_CONTACTS as LC, find_lifecycle_alerts
-        from task_appointment_auditor import DEMO_TASKS, audit_tasks
+        from intelligence_backend import (
+            crm_audit_all_contacts as audit_all_contacts,
+            crm_calculate_pipeline_analytics as calculate_pipeline_analytics,
+            crm_find_lifecycle_alerts as find_lifecycle_alerts,
+            crm_audit_tasks as audit_tasks,
+        )
+        from pipeline_b_data_bridge import get_contacts, get_opportunities, get_tasks
+        DEMO_CONTACTS = get_contacts()
+        DEMO_OPPORTUNITIES = get_opportunities()
+        LC = get_contacts()
+        DEMO_TASKS = get_tasks()
 
         p1_contacts = len(DEMO_CONTACTS)
         p1_clean = audit_all_contacts(DEMO_CONTACTS, today).get("data_quality_score", 0)
