@@ -1,0 +1,19 @@
+# Render Blueprint for Agency OS Backend
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: agency-os-backend
+    runtime: python
+    rootDir: .
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: python3 backend/server.py
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false  # Set manually in Render dashboard
+      - key: ALLOWED_ORIGINS
+        sync: false  # Set to your Vercel frontend URL
+      - key: PORT
+        value: "10000"
+      - key: PYTHON_VERSION
+        value: "3.11.0"
