@@ -1,0 +1,327 @@
+{
+  "report_name": "Command Center V2 Audit Report",
+  "date": "2026-08-16",
+  "timestamp": "2026-08-17T03:55:00.344041",
+  "overall_status": "FAIL",
+  "summary": {
+    "total_checks": 12,
+    "passed": 9,
+    "failed": 1,
+    "warnings": 2
+  },
+  "checks": [
+    {
+      "check_id": 1,
+      "check_name": "All 12 agent data functions return successfully",
+      "status": "PASS",
+      "passed": 12,
+      "failed": 0,
+      "findings": [
+        {
+          "phase": 1,
+          "agent": "Lead Follow-Up",
+          "status": "PASS",
+          "detail": "Returned dict with 6 keys."
+        },
+        {
+          "phase": 2,
+          "agent": "Marketing Content",
+          "status": "PASS",
+          "detail": "Returned dict with 6 keys."
+        },
+        {
+          "phase": 3,
+          "agent": "Client Nurture",
+          "status": "PASS",
+          "detail": "Returned dict with 6 keys."
+        },
+        {
+          "phase": 4,
+          "agent": "Referral Growth",
+          "status": "PASS",
+          "detail": "Returned dict with 6 keys."
+        },
+        {
+          "phase": 5,
+          "agent": "Community Outreach",
+          "status": "PASS",
+          "detail": "Returned dict with 6 keys."
+        },
+        {
+          "phase": 6,
+          "agent": "CRM Management",
+          "status": "PASS",
+          "detail": "Returned dict with 6 keys."
+        },
+        {
+          "phase": 7,
+          "agent": "Executive AI",
+          "status": "PASS",
+          "detail": "Returned dict with 15 keys."
+        },
+        {
+          "phase": 8,
+          "agent": "What Changed?",
+          "status": "PASS",
+          "detail": "Returned dict with 16 keys."
+        },
+        {
+          "phase": 9,
+          "agent": "Lead Scoring",
+          "status": "PASS",
+          "detail": "Returned dict with 14 keys."
+        },
+        {
+          "phase": 10,
+          "agent": "Referral Intelligence",
+          "status": "PASS",
+          "detail": "Returned dict with 18 keys."
+        },
+        {
+          "phase": 11,
+          "agent": "Revenue Forecasting",
+          "status": "PASS",
+          "detail": "Returned dict with 17 keys."
+        },
+        {
+          "phase": 12,
+          "agent": "CLV Intelligence",
+          "status": "PASS",
+          "detail": "Returned dict with 18 keys."
+        }
+      ]
+    },
+    {
+      "check_id": "1b",
+      "check_name": "Shared helper functions (action_queue, pipeline, compliance) return",
+      "status": "PASS",
+      "passed": 3,
+      "failed": 0,
+      "findings": [
+        {
+          "function": "get_action_queue",
+          "status": "PASS",
+          "detail": "Returned list"
+        },
+        {
+          "function": "get_pipeline_summary",
+          "status": "PASS",
+          "detail": "Returned dict"
+        },
+        {
+          "function": "get_compliance_summary",
+          "status": "PASS",
+          "detail": "Returned dict"
+        }
+      ]
+    },
+    {
+      "check_id": 2,
+      "check_name": "No broken links or dead buttons in nav",
+      "status": "PASS",
+      "findings": [
+        "No broken links detected."
+      ]
+    },
+    {
+      "check_id": 3,
+      "check_name": "No duplicate functions",
+      "status": "PASS",
+      "findings": [
+        "No duplicate function definitions found."
+      ]
+    },
+    {
+      "check_id": 4,
+      "check_name": "No missing data",
+      "status": "PASS",
+      "findings": [
+        "All agents returned data with kpis."
+      ]
+    },
+    {
+      "check_id": 5,
+      "check_name": "No incorrect calculations",
+      "status": "FAIL",
+      "findings": [
+        "1 snapshot cards have empty/zero values"
+      ]
+    },
+    {
+      "check_id": 6,
+      "check_name": "No inconsistent terminology",
+      "status": "WARN",
+      "findings": [
+        "CRM Management: uses 'deal' (preferred: 'opportunity')",
+        "CRM Management: uses 'deals' (preferred: 'opportunities')",
+        "Executive AI: uses 'deal' (preferred: 'opportunity')",
+        "Executive AI: uses 'deals' (preferred: 'opportunities')",
+        "Executive AI: uses 'prospect' (preferred: 'prospect')",
+        "What Changed?: uses 'deal' (preferred: 'opportunity')",
+        "What Changed?: uses 'deals' (preferred: 'opportunities')",
+        "What Changed?: uses 'prospect' (preferred: 'prospect')",
+        "Referral Intelligence: uses 'deal' (preferred: 'opportunity')",
+        "Revenue Forecasting: uses 'deal' (preferred: 'opportunity')"
+      ]
+    },
+    {
+      "check_id": 7,
+      "check_name": "Agent outputs reaching the Command Center",
+      "status": "PASS",
+      "findings": [
+        "All agent outputs reach the Command Center."
+      ]
+    },
+    {
+      "check_id": 8,
+      "check_name": "Actions execute properly",
+      "status": "PASS",
+      "findings": [
+        "All action buttons render with valid metadata."
+      ]
+    },
+    {
+      "check_id": 9,
+      "check_name": "Mobile/desktop layout issues",
+      "status": "PASS",
+      "findings": [
+        "Layout includes responsive media queries and viewport meta."
+      ]
+    },
+    {
+      "check_id": 10,
+      "check_name": "Information overload check",
+      "status": "PASS",
+      "findings": [
+        "Information density within limits: 5 priorities, 15 attention items, 16 cards."
+      ]
+    },
+    {
+      "check_id": 11,
+      "check_name": "Missing automation opportunities",
+      "status": "INFO",
+      "findings": [
+        "No external integrations connected -- call/email/schedule actions require manual workflow (DRAFT)."
+      ]
+    }
+  ],
+  "intelligence_map": {
+    "map_name": "Command Center V2 Intelligence Flow",
+    "flow": "DATA SOURCES -> INDIVIDUAL INTELLIGENCE FUNCTIONS -> NORMALIZED INTELLIGENCE -> PRIORITY ENGINE -> EXECUTIVE AI -> COMMAND CENTER -> USER ACTION",
+    "stages": [
+      {
+        "stage": 1,
+        "name": "DATA SOURCES",
+        "description": "Raw data from CRM, contacts, opportunities, campaigns, calendars, and partner sources.",
+        "components": [
+          "DEMO_CONTACTS (phase1)",
+          "email-campaigns.json (phase2)",
+          "content-calendar-2026.csv (phase2)",
+          "client-drip-campaigns.json (phase3)",
+          "client-touchpoint-calendar-2026.csv (phase3)",
+          "referral-source-scorecard.csv (phase4)",
+          "partner-prospect-template.csv (phase4)",
+          "community-event-calendar-2026.csv (phase5)",
+          "DEMO_OPPORTUNITIES (phase6)",
+          "DEMO_TASKS / DEMO_APPOINTMENTS (phase6)",
+          "DEMO_GHL_TAGS / DEMO_GHL_FIELDS (phase6)"
+        ]
+      },
+      {
+        "stage": 2,
+        "name": "INDIVIDUAL INTELLIGENCE FUNCTIONS",
+        "description": "12 agent data functions, each normalizing one domain.",
+        "components": [
+          "Lead Follow-Up (phase 1)",
+          "Marketing Content (phase 2)",
+          "Client Nurture (phase 3)",
+          "Referral Growth (phase 4)",
+          "Community Outreach (phase 5)",
+          "CRM Management (phase 6)",
+          "Executive AI (phase 7)",
+          "What Changed? (phase 8)",
+          "Lead Scoring (phase 9)",
+          "Referral Intelligence (phase 10)",
+          "Revenue Forecasting (phase 11)",
+          "CLV Intelligence (phase 12)",
+          "get_action_queue",
+          "get_pipeline_summary",
+          "get_compliance_summary"
+        ]
+      },
+      {
+        "stage": 3,
+        "name": "NORMALIZED INTELLIGENCE",
+        "description": "command_center_v2_engine normalizes all agent outputs into a unified schema: entity, entity_type, priority_score, reason, opportunity_value, risk, recommended_action, action_type, due_date, source_system, timestamp, status, explanation.",
+        "components": [
+          "_normalize_executive",
+          "_normalize_what_changed",
+          "_normalize_lead_scoring",
+          "_normalize_referral_intelligence",
+          "_normalize_revenue_forecasting",
+          "_normalize_clv",
+          "_normalize_crm",
+          "_normalize_phase1..5",
+          "_normalize_action_queue"
+        ]
+      },
+      {
+        "stage": 4,
+        "name": "PRIORITY ENGINE",
+        "description": "Scores each item using urgency + value + probability + risk + recency + deadline + strategic importance (capped at 100). Surfaces top 5 priorities and a single 'what should I do next'.",
+        "components": [
+          "_score_item",
+          "_rank_and_explain",
+          "get_top_5_priorities",
+          "get_what_should_i_do_next",
+          "get_needs_attention"
+        ]
+      },
+      {
+        "stage": 5,
+        "name": "EXECUTIVE AI",
+        "description": "Health score, escalations, briefings, and forecasts layered above the priority engine.",
+        "components": [
+          "business_health_score",
+          "escalation_engine",
+          "daily_priority_engine",
+          "future_prediction_engine",
+          "ai_activity_monitor"
+        ]
+      },
+      {
+        "stage": 6,
+        "name": "COMMAND CENTER",
+        "description": "Master function get_command_center_v2() aggregates everything into a single response: greeting, top 5, next action, needs attention, snapshot, summaries.",
+        "components": [
+          "get_command_center_v2",
+          "get_business_snapshot",
+          "get_revenue_summary",
+          "get_marketing_summary",
+          "get_referral_summary",
+          "get_client_health_summary",
+          "get_what_changed_summary"
+        ]
+      },
+      {
+        "stage": 7,
+        "name": "USER ACTION",
+        "description": "command_center_action_engine converts priorities into actionable buttons (call, email, schedule, approve, etc.). External actions surface as DRAFT -- owner approval required when no integration exists.",
+        "components": [
+          "get_actions_for_priority",
+          "get_all_actions",
+          "render_action_button"
+        ]
+      }
+    ],
+    "agent_count": 12,
+    "shared_functions": [
+      "get_action_queue",
+      "get_pipeline_summary",
+      "get_compliance_summary"
+    ],
+    "date": "2026-08-16",
+    "disclaimer": "All data marked [SAMPLE]. DRAFT -- owner approval required."
+  },
+  "disclaimer": "All data marked [SAMPLE]. DRAFT -- owner approval required."
+}

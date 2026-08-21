@@ -1,0 +1,272 @@
+{
+  "agents": {
+    "1": {
+      "name": "Lead Follow-Up",
+      "phase": 1,
+      "port": 8000,
+      "url": "http://localhost:8016/api/phase-1",
+      "response_time": 4.48,
+      "has_data": true,
+      "keys": [
+        "agent_name",
+        "phase",
+        "port",
+        "endpoints",
+        "status",
+        "kpis"
+      ],
+      "error": ""
+    },
+    "2": {
+      "name": "Marketing Content",
+      "phase": 2,
+      "port": 8001,
+      "url": "http://localhost:8016/api/phase-2",
+      "response_time": 4.48,
+      "has_data": true,
+      "keys": [
+        "agent_name",
+        "phase",
+        "port",
+        "endpoints",
+        "status",
+        "kpis"
+      ],
+      "error": ""
+    },
+    "3": {
+      "name": "Client Nurture",
+      "phase": 3,
+      "port": 8002,
+      "url": "http://localhost:8016/api/phase-3",
+      "response_time": 4.48,
+      "has_data": true,
+      "keys": [
+        "agent_name",
+        "phase",
+        "port",
+        "endpoints",
+        "status",
+        "kpis"
+      ],
+      "error": ""
+    },
+    "4": {
+      "name": "Referral Growth",
+      "phase": 4,
+      "port": 8003,
+      "url": "http://localhost:8016/api/phase-4",
+      "response_time": 4.48,
+      "has_data": true,
+      "keys": [
+        "agent_name",
+        "phase",
+        "port",
+        "endpoints",
+        "status",
+        "kpis"
+      ],
+      "error": ""
+    },
+    "5": {
+      "name": "Community Outreach",
+      "phase": 5,
+      "port": 8004,
+      "url": "http://localhost:8016/api/phase-5",
+      "response_time": 4.48,
+      "has_data": true,
+      "keys": [
+        "agent_name",
+        "phase",
+        "port",
+        "endpoints",
+        "status",
+        "kpis"
+      ],
+      "error": ""
+    },
+    "6": {
+      "name": "CRM Management",
+      "phase": 6,
+      "port": 8005,
+      "url": "http://localhost:8016/api/phase-6",
+      "response_time": 4.48,
+      "has_data": true,
+      "keys": [
+        "agent_name",
+        "phase",
+        "port",
+        "endpoints",
+        "status",
+        "kpis"
+      ],
+      "error": ""
+    },
+    "7": {
+      "name": "Executive AI",
+      "phase": 7,
+      "port": 8007,
+      "url": "http://localhost:8016/api/phase-7",
+      "response_time": 4.48,
+      "has_data": true,
+      "keys": [
+        "agent_name",
+        "phase",
+        "port",
+        "endpoints",
+        "status",
+        "kpis",
+        "briefing",
+        "priorities",
+        "health_dimensions",
+        "improvement_opportunities",
+        "escalations",
+        "forecast",
+        "activity_24h",
+        "agent_coordination",
+        "overnight_changes"
+      ],
+      "error": ""
+    },
+    "8": {
+      "name": "What Changed?",
+      "phase": 8,
+      "port": 8008,
+      "url": "http://localhost:8016/api/phase-8",
+      "response_time": 4.48,
+      "has_data": true,
+      "keys": [
+        "agent_name",
+        "phase",
+        "port",
+        "endpoints",
+        "status",
+        "kpis",
+        "top_5_changes",
+        "movement_score",
+        "changes_by_period",
+        "changes_by_category",
+        "changes_by_severity",
+        "exceptions",
+        "trends",
+        "missed_opportunities",
+        "ai_insights"
+      ],
+      "error": ""
+    },
+    "9": {
+      "name": "Lead Scoring",
+      "phase": 9,
+      "port": 8009,
+      "url": "http://localhost:8016/api/phase-9",
+      "response_time": 4.48,
+      "has_data": true,
+      "keys": [
+        "agent_name",
+        "phase",
+        "port",
+        "endpoints",
+        "status",
+        "kpis",
+        "top_10_opportunities",
+        "tier_distribution",
+        "scored_leads",
+        "conversion_probabilities",
+        "revenue_opportunities",
+        "decay_alerts",
+        "next_best_actions",
+        "daily_call_list"
+      ],
+      "error": ""
+    },
+    "10": {
+      "name": "Referral Intelligence",
+      "phase": 10,
+      "port": 8010,
+      "url": "http://localhost:8016/api/phase-10",
+      "response_time": 4.48,
+      "has_data": true,
+      "keys": [
+        "agent_name",
+        "phase",
+        "port",
+        "endpoints",
+        "status",
+        "kpis",
+        "top_opportunities",
+        "tier_distribution",
+        "scored_sources",
+        "leaderboard",
+        "rising_sources",
+        "dormant_sources",
+        "funnel",
+        "attribution",
+        "partner_opportunities"
+      ],
+      "error": ""
+    },
+    "11": {
+      "name": "Revenue Forecasting",
+      "phase": 11,
+      "port": 8011,
+      "url": "http://localhost:8016/api/phase-11",
+      "response_time": 4.48,
+      "has_data": true,
+      "keys": [
+        "agent_name",
+        "phase",
+        "port",
+        "endpoints",
+        "status",
+        "kpis",
+        "categories",
+        "forecasts",
+        "scenarios",
+        "targets",
+        "gap_analysis",
+        "action_plan",
+        "product_forecast",
+        "source_forecast",
+        "risks"
+      ],
+      "error": ""
+    },
+    "12": {
+      "name": "CLV Intelligence",
+      "phase": 12,
+      "port": 8012,
+      "url": "http://localhost:8016/api/phase-12",
+      "response_time": 4.48,
+      "has_data": true,
+      "keys": [
+        "agent_name",
+        "phase",
+        "port",
+        "endpoints",
+        "status",
+        "kpis",
+        "clients",
+        "leaderboard",
+        "segments",
+        "health_scores",
+        "matrix",
+        "quadrants",
+        "risks",
+        "opportunities",
+        "portfolio"
+      ],
+      "error": ""
+    }
+  },
+  "command_center": {
+    "url": "http://localhost:8016/api/command-center",
+    "response_time": 4.48,
+    "has_data": true,
+    "agents_count": 12
+  },
+  "endpoints_tested": 12,
+  "v2_endpoint": {
+    "response_time": 16.54,
+    "has_data": true
+  }
+}

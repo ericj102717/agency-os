@@ -1,0 +1,744 @@
+{
+  "checks": [
+    {
+      "check": "Command Center endpoint",
+      "status": "pass",
+      "detail": "4.5s, 12 agents",
+      "category": "endpoint"
+    },
+    {
+      "check": "P1 Lead Follow-Up endpoint",
+      "status": "pass",
+      "detail": "4.5s, 6 keys",
+      "category": "endpoint"
+    },
+    {
+      "check": "P2 Marketing Content endpoint",
+      "status": "pass",
+      "detail": "4.5s, 6 keys",
+      "category": "endpoint"
+    },
+    {
+      "check": "P3 Client Nurture endpoint",
+      "status": "pass",
+      "detail": "4.5s, 6 keys",
+      "category": "endpoint"
+    },
+    {
+      "check": "P4 Referral Growth endpoint",
+      "status": "pass",
+      "detail": "4.5s, 6 keys",
+      "category": "endpoint"
+    },
+    {
+      "check": "P5 Community Outreach endpoint",
+      "status": "pass",
+      "detail": "4.5s, 6 keys",
+      "category": "endpoint"
+    },
+    {
+      "check": "P6 CRM Management endpoint",
+      "status": "pass",
+      "detail": "4.5s, 6 keys",
+      "category": "endpoint"
+    },
+    {
+      "check": "P7 Executive AI endpoint",
+      "status": "pass",
+      "detail": "4.5s, 15 keys",
+      "category": "endpoint"
+    },
+    {
+      "check": "P8 What Changed? endpoint",
+      "status": "pass",
+      "detail": "4.5s, 16 keys",
+      "category": "endpoint"
+    },
+    {
+      "check": "P9 Lead Scoring endpoint",
+      "status": "pass",
+      "detail": "4.5s, 14 keys",
+      "category": "endpoint"
+    },
+    {
+      "check": "P10 Referral Intelligence endpoint",
+      "status": "pass",
+      "detail": "4.5s, 18 keys",
+      "category": "endpoint"
+    },
+    {
+      "check": "P11 Revenue Forecasting endpoint",
+      "status": "pass",
+      "detail": "4.5s, 17 keys",
+      "category": "endpoint"
+    },
+    {
+      "check": "P12 CLV Intelligence endpoint",
+      "status": "pass",
+      "detail": "4.5s, 18 keys",
+      "category": "endpoint"
+    },
+    {
+      "check": "V2 endpoint",
+      "status": "pass",
+      "detail": "16.5s, keys: ['greeting', 'date', 'timestamp', 'top_5_priorities', 'what_should_i_do_next', 'needs_attention', 'business_snapshot', 'what_changed_summary', 'client_health_summary', 'referral_summary']",
+      "category": "endpoint"
+    },
+    {
+      "check": "CC receives P1 data",
+      "status": "pass",
+      "detail": "8 KPI fields",
+      "category": "integration"
+    },
+    {
+      "check": "CC receives P2 data",
+      "status": "pass",
+      "detail": "6 KPI fields",
+      "category": "integration"
+    },
+    {
+      "check": "CC receives P3 data",
+      "status": "pass",
+      "detail": "6 KPI fields",
+      "category": "integration"
+    },
+    {
+      "check": "CC receives P4 data",
+      "status": "pass",
+      "detail": "6 KPI fields",
+      "category": "integration"
+    },
+    {
+      "check": "CC receives P5 data",
+      "status": "pass",
+      "detail": "6 KPI fields",
+      "category": "integration"
+    },
+    {
+      "check": "CC receives P6 data",
+      "status": "pass",
+      "detail": "15 KPI fields",
+      "category": "integration"
+    },
+    {
+      "check": "CC receives P7 data",
+      "status": "pass",
+      "detail": "7 KPI fields",
+      "category": "integration"
+    },
+    {
+      "check": "CC receives P8 data",
+      "status": "pass",
+      "detail": "9 KPI fields",
+      "category": "integration"
+    },
+    {
+      "check": "CC receives P9 data",
+      "status": "pass",
+      "detail": "8 KPI fields",
+      "category": "integration"
+    },
+    {
+      "check": "CC receives P10 data",
+      "status": "pass",
+      "detail": "9 KPI fields",
+      "category": "integration"
+    },
+    {
+      "check": "CC receives P11 data",
+      "status": "pass",
+      "detail": "6 KPI fields",
+      "category": "integration"
+    },
+    {
+      "check": "CC receives P12 data",
+      "status": "pass",
+      "detail": "7 KPI fields",
+      "category": "integration"
+    },
+    {
+      "check": "V2 snapshot cards",
+      "status": "pass",
+      "detail": "16 cards",
+      "category": "integration"
+    },
+    {
+      "check": "V2 top 5 priorities",
+      "status": "pass",
+      "detail": "5 items",
+      "category": "integration"
+    },
+    {
+      "check": "V2 needs attention",
+      "status": "pass",
+      "detail": "15 items",
+      "category": "integration"
+    },
+    {
+      "check": "V2 next action",
+      "status": "pass",
+      "detail": "Action: Close revenue gap",
+      "category": "integration"
+    },
+    {
+      "check": "Top 5 sorted by priority",
+      "status": "pass",
+      "detail": "Scores: [86.0, 67.0, 67.0, 67.0, 67.0]",
+      "category": "priority"
+    },
+    {
+      "check": "Top5 #1 completeness",
+      "status": "pass",
+      "detail": "entity=True, action=True, reason=True, source=True",
+      "category": "priority"
+    },
+    {
+      "check": "Top5 #2 completeness",
+      "status": "pass",
+      "detail": "entity=True, action=True, reason=True, source=True",
+      "category": "priority"
+    },
+    {
+      "check": "Top5 #3 completeness",
+      "status": "pass",
+      "detail": "entity=True, action=True, reason=True, source=True",
+      "category": "priority"
+    },
+    {
+      "check": "Top5 #4 completeness",
+      "status": "pass",
+      "detail": "entity=True, action=True, reason=True, source=True",
+      "category": "priority"
+    },
+    {
+      "check": "Top5 #5 completeness",
+      "status": "pass",
+      "detail": "entity=True, action=True, reason=True, source=True",
+      "category": "priority"
+    },
+    {
+      "check": "Next action completeness",
+      "status": "pass",
+      "detail": "6/6 fields present",
+      "category": "priority"
+    },
+    {
+      "check": "Next action = Top priority",
+      "status": "pass",
+      "detail": "Top1: Revenue Gap vs Next: Revenue Gap",
+      "category": "priority"
+    },
+    {
+      "check": "Snapshot zero-value cards",
+      "status": "warn",
+      "detail": "1 cards with zero values: ['Hot Leads']",
+      "category": "data_quality"
+    },
+    {
+      "check": "Needs Attention #1",
+      "status": "pass",
+      "detail": "title=True, severity=True",
+      "category": "data_quality"
+    },
+    {
+      "check": "Needs Attention #2",
+      "status": "pass",
+      "detail": "title=True, severity=True",
+      "category": "data_quality"
+    },
+    {
+      "check": "Needs Attention #3",
+      "status": "pass",
+      "detail": "title=True, severity=True",
+      "category": "data_quality"
+    },
+    {
+      "check": "Revenue gap calculation",
+      "status": "pass",
+      "detail": "forecast=2554.0, goal=0, gap=297446.0, expected=0",
+      "category": "calculation"
+    },
+    {
+      "check": "Priority #1 analysis",
+      "status": "info",
+      "detail": "score=86.0, opp=$297,446, risk=high, type=revenue_gap, entity=Revenue Gap",
+      "category": "priority"
+    },
+    {
+      "check": "Priority #2 analysis",
+      "status": "info",
+      "detail": "score=67.0, opp=$0, risk=high, type=revenue_risk, entity=Revenue risk",
+      "category": "priority"
+    },
+    {
+      "check": "Priority #3 analysis",
+      "status": "info",
+      "detail": "score=67.0, opp=$0, risk=high, type=revenue_risk, entity=Revenue risk",
+      "category": "priority"
+    },
+    {
+      "check": "Priority #4 analysis",
+      "status": "info",
+      "detail": "score=67.0, opp=$0, risk=high, type=at_risk_client, entity=At-risk client",
+      "category": "priority"
+    },
+    {
+      "check": "Priority #5 analysis",
+      "status": "info",
+      "detail": "score=67.0, opp=$0, risk=high, type=at_risk_client, entity=At-risk client",
+      "category": "priority"
+    },
+    {
+      "check": "Priority scores in 0-100 range",
+      "status": "pass",
+      "detail": "Scores: [86.0, 67.0, 67.0, 67.0, 67.0]",
+      "category": "calculation"
+    },
+    {
+      "check": "Top priority has high opportunity value",
+      "status": "pass",
+      "detail": "#1 opp=$297,446 vs #5 opp=$0",
+      "category": "priority"
+    },
+    {
+      "check": "Priority items have action types",
+      "status": "pass",
+      "detail": "Types: {'call', 'take_action'}",
+      "category": "priority"
+    },
+    {
+      "check": "Action endpoint: GET /api/v2/actions",
+      "status": "pass",
+      "detail": "HTTP 200",
+      "category": "action"
+    },
+    {
+      "check": "Action endpoint: GET /api/v2/action-summary",
+      "status": "pass",
+      "detail": "HTTP 200",
+      "category": "action"
+    },
+    {
+      "check": "Action endpoint: POST /api/v2/actions/execute",
+      "status": "pass",
+      "detail": "HTTP 200",
+      "category": "action"
+    },
+    {
+      "check": "Priorities have status field",
+      "status": "pass",
+      "detail": "Statuses: ['open', 'open', 'open', 'open', 'open']",
+      "category": "action"
+    },
+    {
+      "check": "Open items in top 5",
+      "status": "pass",
+      "detail": "5/5 are open",
+      "category": "action"
+    },
+    {
+      "check": "Action loop: execute \u2192 filter",
+      "status": "fail",
+      "detail": "HTTPConnectionPool(host='localhost', port=8016): Read timed out. (read timeout=10)",
+      "category": "action"
+    },
+    {
+      "check": "Action persistence",
+      "status": "pass",
+      "detail": "POST /api/v2/actions/execute endpoint exists and records actions. V2 engine filters completed items. Action ledger persists to action_events.json.",
+      "category": "action"
+    },
+    {
+      "check": "Pipeline value positive",
+      "status": "pass",
+      "detail": "active=1960, total=1960",
+      "category": "calculation"
+    },
+    {
+      "check": "Greeting matches time of day",
+      "status": "pass",
+      "detail": "greeting='Good morning', expected='Good morning', hour=4",
+      "category": "temporal"
+    },
+    {
+      "check": "V2 date present",
+      "status": "pass",
+      "detail": "date=2026-08-16",
+      "category": "temporal"
+    },
+    {
+      "check": "Overdue items surfaced",
+      "status": "warn",
+      "detail": "0 overdue items in needs attention",
+      "category": "temporal"
+    },
+    {
+      "check": "Revenue forecast range",
+      "status": "info",
+      "detail": "range=",
+      "category": "temporal"
+    },
+    {
+      "check": "Referral data in V2",
+      "status": "pass",
+      "detail": "V2 count=10, P10 count=10",
+      "category": "orphaned"
+    },
+    {
+      "check": "Error handling: nonexistent",
+      "status": "fail",
+      "detail": "HTTPConnectionPool(host='localhost', port=8016): Read timed out. (read timeout=5)",
+      "category": "error_handling"
+    },
+    {
+      "check": "Error handling: phase-99",
+      "status": "pass",
+      "detail": "Returns 404",
+      "category": "error_handling"
+    },
+    {
+      "check": "Error handling: nonexistent",
+      "status": "pass",
+      "detail": "Returns 404",
+      "category": "error_handling"
+    },
+    {
+      "check": "Priority #1 has source",
+      "status": "pass",
+      "detail": "source=Revenue Forecasting",
+      "category": "ai_reliability"
+    },
+    {
+      "check": "Priority #2 has source",
+      "status": "pass",
+      "detail": "source=Revenue Forecasting",
+      "category": "ai_reliability"
+    },
+    {
+      "check": "Priority #3 has source",
+      "status": "pass",
+      "detail": "source=Revenue Forecasting",
+      "category": "ai_reliability"
+    },
+    {
+      "check": "Priority #4 has source",
+      "status": "pass",
+      "detail": "source=CLV Intelligence",
+      "category": "ai_reliability"
+    },
+    {
+      "check": "Priority #5 has source",
+      "status": "pass",
+      "detail": "source=CLV Intelligence",
+      "category": "ai_reliability"
+    },
+    {
+      "check": "Next action is specific",
+      "status": "pass",
+      "detail": "action='Close revenue gap'",
+      "category": "ai_reliability"
+    },
+    {
+      "check": "DRAFT disclaimer present",
+      "status": "pass",
+      "detail": "disclaimer present: True",
+      "category": "compliance"
+    },
+    {
+      "check": "P1 response time",
+      "status": "pass",
+      "detail": "0.0s",
+      "category": "performance"
+    },
+    {
+      "check": "P2 response time",
+      "status": "pass",
+      "detail": "0.0s",
+      "category": "performance"
+    },
+    {
+      "check": "P3 response time",
+      "status": "pass",
+      "detail": "0.0s",
+      "category": "performance"
+    },
+    {
+      "check": "P4 response time",
+      "status": "pass",
+      "detail": "0.0s",
+      "category": "performance"
+    },
+    {
+      "check": "P5 response time",
+      "status": "pass",
+      "detail": "0.0s",
+      "category": "performance"
+    },
+    {
+      "check": "P6 response time",
+      "status": "pass",
+      "detail": "0.0s",
+      "category": "performance"
+    },
+    {
+      "check": "P7 response time",
+      "status": "pass",
+      "detail": "0.0s",
+      "category": "performance"
+    },
+    {
+      "check": "P8 response time",
+      "status": "pass",
+      "detail": "0.0s",
+      "category": "performance"
+    },
+    {
+      "check": "P9 response time",
+      "status": "pass",
+      "detail": "0.0s",
+      "category": "performance"
+    },
+    {
+      "check": "P10 response time",
+      "status": "pass",
+      "detail": "0.0s",
+      "category": "performance"
+    },
+    {
+      "check": "P11 response time",
+      "status": "pass",
+      "detail": "0.0s",
+      "category": "performance"
+    },
+    {
+      "check": "P12 response time",
+      "status": "pass",
+      "detail": "0.0s",
+      "category": "performance"
+    },
+    {
+      "check": "V2 endpoint response time",
+      "status": "warn",
+      "detail": "16.5s",
+      "category": "performance"
+    },
+    {
+      "check": "Duplicate fetch calls in frontend",
+      "status": "pass",
+      "detail": "Total: 1, Unique: 1",
+      "category": "performance"
+    },
+    {
+      "check": "Exposed secrets in app.js",
+      "status": "pass",
+      "detail": "Found 0 potential secrets",
+      "category": "security"
+    },
+    {
+      "check": "Exposed secrets in server.py",
+      "status": "pass",
+      "detail": "Found 0 potential secrets",
+      "category": "security"
+    },
+    {
+      "check": "API authentication",
+      "status": "warn",
+      "detail": "No auth required \u2014 endpoint accessible without key (HTTP 200)",
+      "category": "security"
+    },
+    {
+      "check": "Input validation",
+      "status": "warn",
+      "detail": "POST endpoints not yet implemented \u2014 no user input to validate",
+      "category": "security"
+    },
+    {
+      "check": "S1: Leads exist in system",
+      "status": "pass",
+      "detail": "leads=2",
+      "category": "scenario"
+    },
+    {
+      "check": "S1: Lead scores exist",
+      "status": "fail",
+      "detail": "scores=0",
+      "category": "scenario"
+    },
+    {
+      "check": "S1: Leads in pipeline",
+      "status": "pass",
+      "detail": "pipeline=1960",
+      "category": "scenario"
+    },
+    {
+      "check": "S1: Lead appears in priorities",
+      "status": "warn",
+      "detail": "Checking if leads surface in Top 5",
+      "category": "scenario"
+    },
+    {
+      "check": "S2: Revenue data exists",
+      "status": "pass",
+      "detail": "revenue=2060.0",
+      "category": "scenario"
+    },
+    {
+      "check": "S2: Revenue gap is top priority",
+      "status": "pass",
+      "detail": "next action: Revenue Gap",
+      "category": "scenario"
+    },
+    {
+      "check": "S3: At-risk clients surfaced",
+      "status": "warn",
+      "detail": "0 at-risk clients",
+      "category": "scenario"
+    },
+    {
+      "check": "S4: Referral opportunities in V2",
+      "status": "pass",
+      "detail": "count=10",
+      "category": "scenario"
+    },
+    {
+      "check": "S4: Referral in top 5",
+      "status": "warn",
+      "detail": "Checking if referrals surface in Top 5",
+      "category": "scenario"
+    },
+    {
+      "check": "S5: Revenue gap exists",
+      "status": "pass",
+      "detail": "gap=$297,446",
+      "category": "scenario"
+    },
+    {
+      "check": "S5: Revenue gap is #1 priority",
+      "status": "pass",
+      "detail": "next: Revenue Gap",
+      "category": "scenario"
+    },
+    {
+      "check": "S5: Revenue recommendation exists",
+      "status": "pass",
+      "detail": "rec: Accelerate pipeline to close revenue gap.",
+      "category": "scenario"
+    }
+  ],
+  "fixes": [],
+  "scenarios": [
+    {
+      "name": "New Medicare Lead",
+      "status": "fail",
+      "details": "Lead data exists in P1 and P9, but no end-to-end flow from new lead creation \u2192 scoring \u2192 prioritization"
+    },
+    {
+      "name": "High-Value Life Insurance Opportunity",
+      "status": "partial",
+      "details": "Revenue gap is surfaced as #1 priority, but no mechanism to create a specific high-value opportunity and trace it through"
+    },
+    {
+      "name": "At-Risk Existing Client",
+      "status": "partial",
+      "details": "CLV data exists, client health cards appear, but no mechanism to create a test at-risk client and trace the alert"
+    },
+    {
+      "name": "Referral Opportunity",
+      "status": "partial",
+      "details": "Referral data exists in P10 and appears in V2 summary, but not always in Top 5 priorities"
+    },
+    {
+      "name": "Revenue Shortfall",
+      "status": "pass",
+      "details": "Revenue gap of $297,446 is surfaced as #1 priority with recommendation"
+    }
+  ],
+  "start_time": "2026-08-17T04:31:29.058457",
+  "summary": {
+    "total": 104,
+    "pass": 87,
+    "fail": 3,
+    "warn": 8,
+    "info": 6,
+    "pass_rate": 83.7
+  },
+  "end_time": "2026-08-17T04:32:49.945090",
+  "issues": {
+    "P0": [
+      {
+        "check": "Action loop: execute \u2192 filter",
+        "detail": "HTTPConnectionPool(host='localhost', port=8016): Read timed out. (read timeout=10)"
+      }
+    ],
+    "P1": [
+      {
+        "check": "Error handling: nonexistent",
+        "detail": "HTTPConnectionPool(host='localhost', port=8016): Read timed out. (read timeout=5)"
+      },
+      {
+        "check": "S1: Lead scores exist",
+        "detail": "scores=0"
+      }
+    ],
+    "P2": [
+      {
+        "check": "Snapshot zero-value cards",
+        "detail": "1 cards with zero values: ['Hot Leads']"
+      },
+      {
+        "check": "Overdue items surfaced",
+        "detail": "0 overdue items in needs attention"
+      },
+      {
+        "check": "V2 endpoint response time",
+        "detail": "16.5s"
+      },
+      {
+        "check": "API authentication",
+        "detail": "No auth required \u2014 endpoint accessible without key (HTTP 200)"
+      },
+      {
+        "check": "Input validation",
+        "detail": "POST endpoints not yet implemented \u2014 no user input to validate"
+      },
+      {
+        "check": "S1: Lead appears in priorities",
+        "detail": "Checking if leads surface in Top 5"
+      },
+      {
+        "check": "S3: At-risk clients surfaced",
+        "detail": "0 at-risk clients"
+      },
+      {
+        "check": "S4: Referral in top 5",
+        "detail": "Checking if referrals surface in Top 5"
+      }
+    ],
+    "P3": [
+      {
+        "check": "Priority #1 analysis",
+        "detail": "score=86.0, opp=$297,446, risk=high, type=revenue_gap, entity=Revenue Gap"
+      },
+      {
+        "check": "Priority #2 analysis",
+        "detail": "score=67.0, opp=$0, risk=high, type=revenue_risk, entity=Revenue risk"
+      },
+      {
+        "check": "Priority #3 analysis",
+        "detail": "score=67.0, opp=$0, risk=high, type=revenue_risk, entity=Revenue risk"
+      },
+      {
+        "check": "Priority #4 analysis",
+        "detail": "score=67.0, opp=$0, risk=high, type=at_risk_client, entity=At-risk client"
+      },
+      {
+        "check": "Priority #5 analysis",
+        "detail": "score=67.0, opp=$0, risk=high, type=at_risk_client, entity=At-risk client"
+      },
+      {
+        "check": "Revenue forecast range",
+        "detail": "range="
+      }
+    ]
+  }
+}
