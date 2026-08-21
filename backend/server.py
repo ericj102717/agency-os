@@ -1082,18 +1082,20 @@ def get_referral_intelligence_data() -> Dict[str, Any]:
                 "message": "Not enough data yet. Import contacts and referral sources to get referral intelligence.",
             }
 
-        from referral_source_database import build_source_database
-        from referral_potential_score import score_all_sources
-        from referral_opportunity_engine import identify_opportunities
-        from referral_timing_engine import evaluate_all_timing
+        from intelligence_backend import (
+            referral_build_source_database as build_source_database,
+            referral_score_all_sources as score_all_sources,
+            referral_identify_opportunities as identify_opportunities,
+            referral_evaluate_timing as evaluate_all_timing,
+            referral_track_funnel as track_funnel,
+            referral_analyze_attribution as analyze_attribution,
+            referral_analyze_value as analyze_value,
+            referral_detect_gaps as detect_gaps,
+            referral_generate_campaigns as generate_campaigns,
+            referral_generate_leaderboard as generate_leaderboard,
+        )
         from partner_intelligence_engine import analyze_partners
         from partner_opportunity_detector import detect_partner_opportunities
-        from referral_funnel_tracker import track_funnel
-        from referral_attribution_engine import analyze_attribution
-        from referral_value_analysis import analyze_value
-        from referral_gap_detector import detect_gaps
-        from referral_campaign_engine import generate_campaigns
-        from referral_leaderboard import generate_leaderboard
         from daily_referral_briefing import generate_briefing
 
         sources = build_source_database()
