@@ -1007,7 +1007,7 @@ def get_lead_scoring_data() -> Dict[str, Any]:
         from lead_scoring_engine import score_all_leads
         from daily_opportunity_ranker import rank_opportunities
         from conversion_probability_model import predict_all_probabilities
-        from revenue_opportunity_model import identify_revenue_opportunities
+        from intelligence_backend import lead_scoring_revenue_opportunities as identify_revenue_opportunities
         from lead_decay_engine import detect_all_decay
         from next_best_action_engine import generate_all_recommendations
 
@@ -1277,17 +1277,19 @@ def get_revenue_forecasting_data() -> Dict[str, Any]:
             }
         if _phase11 not in _sys.path:
             _sys.path.insert(0, _phase11)
-        from revenue_data_adapter import get_revenue_summary
-        from revenue_category_engine import categorize_revenue
+        from intelligence_backend import (
+            revenue_get_revenue_summary as get_revenue_summary,
+            revenue_categorize_revenue as categorize_revenue,
+            revenue_calculate_target_progress as calculate_target_progress,
+            revenue_analyze_gap as analyze_gap,
+            revenue_generate_action_plan as generate_action_plan,
+            revenue_identify_risks as identify_risks,
+            revenue_identify_opportunities as identify_opportunities,
+        )
         from forecasting_model import generate_all_forecasts
         from scenario_forecasting_engine import generate_scenarios
-        from revenue_target_engine import calculate_target_progress
-        from revenue_gap_analysis import analyze_gap
-        from revenue_action_plan_engine import generate_action_plan
         from product_forecast_engine import forecast_by_product
         from source_forecast_engine import forecast_by_source
-        from revenue_risk_engine import identify_risks
-        from revenue_opportunity_engine import identify_opportunities
         from daily_revenue_briefing import generate_briefing
 
         summary = get_revenue_summary()
@@ -1488,9 +1490,11 @@ def get_revenue_forecasting_light() -> Dict[str, Any]:
         _phase11 = os.path.join(WORKSPACE, "phase11")
         if _phase11 not in _sys.path:
             _sys.path.insert(0, _phase11)
-        from revenue_data_adapter import get_revenue_summary
-        from revenue_category_engine import categorize_revenue
-        from revenue_gap_analysis import analyze_gap
+        from intelligence_backend import (
+            revenue_get_revenue_summary as get_revenue_summary,
+            revenue_categorize_revenue as categorize_revenue,
+            revenue_analyze_gap as analyze_gap,
+        )
         summary = get_revenue_summary()
         cats = categorize_revenue()
         gap = analyze_gap()
