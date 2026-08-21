@@ -810,8 +810,10 @@ def get_executive_data() -> Dict[str, Any]:
             }
         if _phase7 not in _sys.path:
             _sys.path.insert(0, _phase7)
-        from executive_data_adapter import get_executive_schema  # get_agent_summaries removed (unused)
-        from daily_priority_engine import generate_priorities
+        from intelligence_backend import (
+            executive_get_schema as get_executive_schema,
+            executive_generate_priorities as generate_priorities,
+        )
         from business_health_score import compute_health_score
         from escalation_engine import generate_escalations
 
@@ -901,12 +903,13 @@ def get_what_changed_data() -> Dict[str, Any]:
                 "message": "Not enough data yet. Import data and run daily comparisons to detect changes.",
             }
 
-        # get_current_state and get_comparison_periods removed (unused — detect_all_changes handles internally)
-        from change_detection_engine import detect_all_changes
-        from business_movement_score import compute_movement_score
-        from exception_detection_engine import detect_exceptions
-        from trend_analysis_engine import analyze_trends
-        from missed_opportunity_detector import detect_missed_opportunities
+        from intelligence_backend import (
+            what_changed_detect_all_changes as detect_all_changes,
+            what_changed_compute_movement_score as compute_movement_score,
+            what_changed_detect_exceptions as detect_exceptions,
+            what_changed_analyze_trends as analyze_trends,
+            what_changed_detect_missed_opportunities as detect_missed_opportunities,
+        )
         from ai_insights_generator import generate_insights
 
         changes = detect_all_changes()
@@ -1005,7 +1008,7 @@ def get_lead_scoring_data() -> Dict[str, Any]:
         if _phase9 not in _sys.path:
             _sys.path.insert(0, _phase9)
         from lead_scoring_engine import score_all_leads
-        from daily_opportunity_ranker import rank_opportunities
+        from intelligence_backend import lead_scoring_rank_opportunities as rank_opportunities
         from conversion_probability_model import predict_all_probabilities
         from intelligence_backend import lead_scoring_revenue_opportunities as identify_revenue_opportunities
         from lead_decay_engine import detect_all_decay
@@ -1096,7 +1099,7 @@ def get_referral_intelligence_data() -> Dict[str, Any]:
         )
         from partner_intelligence_engine import analyze_partners
         from partner_opportunity_detector import detect_partner_opportunities
-        from daily_referral_briefing import generate_briefing
+        from intelligence_backend import referral_generate_briefing as generate_briefing
 
         sources = build_source_database()
         scores = score_all_sources()
@@ -1292,7 +1295,7 @@ def get_revenue_forecasting_data() -> Dict[str, Any]:
         from scenario_forecasting_engine import generate_scenarios
         from product_forecast_engine import forecast_by_product
         from source_forecast_engine import forecast_by_source
-        from daily_revenue_briefing import generate_briefing
+        from intelligence_backend import revenue_generate_briefing as generate_briefing
 
         summary = get_revenue_summary()
         categories = categorize_revenue()
@@ -1379,18 +1382,21 @@ def get_clv_intelligence_data() -> Dict[str, Any]:
             }
         if _phase12 not in _sys.path:
             _sys.path.insert(0, _phase12)
-        from clv_data_adapter import get_client_records, get_client_summary
-        from clv_calculation_engine import calculate_all_clv
-        from clv_score_engine import score_all_clients
-        from client_value_segmentation import segment_clients
+        from intelligence_backend import (
+            clv_get_client_records as get_client_records,
+            clv_get_client_summary as get_client_summary,
+            clv_calculate_all_clv as calculate_all_clv,
+            clv_score_all_clients as score_all_clients,
+            clv_segment_clients as segment_clients,
+            clv_build_matrix as build_matrix,
+            clv_identify_risks as identify_risks,
+            clv_identify_opportunities as identify_opportunities,
+            clv_analyze_portfolio as analyze_portfolio,
+            clv_assess_concentration as assess_concentration,
+            clv_generate_briefing as generate_briefing,
+        )
         from relationship_health_score import score_all_health
-        from client_value_matrix import build_matrix
-        from client_risk_engine import identify_risks
-        from client_opportunity_engine import identify_opportunities
-        from client_portfolio_analysis import analyze_portfolio
-        from client_concentration_risk import assess_concentration
         from who_should_i_call_engine import generate_call_list
-        from executive_clv_briefing import generate_briefing
 
         records = get_client_records()
         summary = get_client_summary()
@@ -1540,15 +1546,18 @@ def get_clv_intelligence_light() -> Dict[str, Any]:
         _phase12 = os.path.join(WORKSPACE, "phase12")
         if _phase12 not in _sys.path:
             _sys.path.insert(0, _phase12)
-        from clv_data_adapter import get_client_records, get_client_summary
-        from clv_calculation_engine import calculate_all_clv
-        from clv_score_engine import score_all_clients
-        from client_value_segmentation import segment_clients
+        from intelligence_backend import (
+            clv_get_client_records as get_client_records,
+            clv_get_client_summary as get_client_summary,
+            clv_calculate_all_clv as calculate_all_clv,
+            clv_score_all_clients as score_all_clients,
+            clv_segment_clients as segment_clients,
+            clv_build_matrix as build_matrix,
+            clv_identify_risks as identify_risks,
+            clv_identify_opportunities as identify_opportunities,
+            clv_assess_concentration as assess_concentration,
+        )
         from relationship_health_score import score_all_health
-        from client_value_matrix import build_matrix
-        from client_risk_engine import identify_risks
-        from client_opportunity_engine import identify_opportunities
-        from client_concentration_risk import assess_concentration
         from who_should_i_call_engine import generate_call_list
         records = get_client_records()
         summary = get_client_summary()
