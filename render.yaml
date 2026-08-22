@@ -10,9 +10,9 @@ services:
     healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
-        sync: postgresql://postgres.Uo7HUK00Eaju4YJ7@db.jpeavskedjffubzojdmu.supabase.co:5432/postgres
+        sync: false  # Set manually in Render dashboard — do NOT commit credentials
       - key: ALLOWED_ORIGINS
-        sync: 
+        sync: false  # Set to your Vercel frontend URL after deploying frontend
       - key: PORT
         value: "10000"
       - key: PYTHON_VERSION
