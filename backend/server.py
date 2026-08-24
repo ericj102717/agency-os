@@ -3146,6 +3146,15 @@ def _startup_precompute():
     _health_monitor.record_event("application", "started", "INFO",
                                  f"Server started on port {os.environ.get('PORT', '8020')}")
     _health_monitor.run_lightweight_checks()
+
+    # Initialize database schema on startup (creates tables if missing)
+    try:
+        import db as _dbmod
+        _dbmod.init_db()
+        print("Database schema initialized")
+    except Exception as e:
+        print(f"Database schema init error: {e}")
+
     """Pre-compute V2 and audit data in background after server starts."""
     import threading
     def compute():
