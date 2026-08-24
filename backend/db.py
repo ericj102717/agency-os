@@ -309,8 +309,11 @@ def _init_pg():
             schema_sql = _translate_sql(SCHEMA_SQL)
         # Execute each statement separately (psycopg2 doesn't have executescript)
         for stmt in schema_sql.split(";"):
-            stmt = stmt.strip()
-            if stmt and not stmt.startswith("--"):
+            # Strip comments and whitespace — statements may have inline comments
+            lines = stmt.strip().splitlines()
+            clean_lines = [l for l in lines if not l.strip().startswith("--")]
+            stmt = "\n".join(clean_lines).strip()
+            if stmt:
                 try:
                     cursor.execute(stmt)
                 except Exception as e:
