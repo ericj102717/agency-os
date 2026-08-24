@@ -1508,8 +1508,10 @@ def init_schema(x_api_key: str = None):
                             continue
                         try:
                             cursor.execute(clean)
+                            conn.commit()  # Commit after each statement to prevent transaction abort cascade
                             executed += 1
                         except Exception as e2:
+                            conn.rollback()  # Reset transaction state after error
                             err = str(e2)
                             if "already exists" not in err:
                                 errors.append(f"{clean[:80]}... → {err[:100]}")
