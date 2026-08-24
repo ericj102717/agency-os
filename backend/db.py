@@ -59,26 +59,28 @@ def _get_sqlite_conn() -> sqlite3.Connection:
 _pg_pool = None
 _pg_lock = threading.Lock()
 
+import psycopg2 as _psycopg2_mod
+from psycopg2 import extras as _psycopg2_extras
+
 def _get_pg_conn():
-    """Get a Postgres connection from the pool."""
-    global _pg_pool
-    if _pg_pool is None:
-        try:
-            import psycopg2
-            from psycopg2 import pool, extras
-            _pg_pool = pool.ThreadedConnectionPool(
-                2, 15,
-                DATABASE_URL,
-                cursor_factory=extras.RealDictCursor,
-            )
-        except ImportError:
-            raise RuntimeError("psycopg2 not installed: pip install psycopg2-binary")
-    return _pg_pool.getconn()
+    """Get a Postgres connection — direct connection, Supabase pooler handles pooling."""
+    try:
+        conn = _psycopg2_mod.connect(
+            DATABASE_URL,
+            cursor_factory=_psycopg2_extras.RealDictCursor,
+            connect_timeout=30,
+        )
+        conn.autocommit = False
+        return conn
+    except Exception as e:
+        raise RuntimeError(f"Failed to connect to Postgres: {e}")
 
 def _return_pg_conn(conn):
-    """Return a connection to the pool."""
-    if _pg_pool:
-        _pg_pool.putconn(conn)
+    """Close a direct Postgres connection."""
+    try:
+        conn.close()
+    except Exception:
+        pass
 
 # ---------------------------------------------------------------------------
 # SQL translation: SQLite → Postgres
