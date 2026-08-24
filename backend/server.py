@@ -2079,7 +2079,7 @@ def v2_priority_engine(x_api_key: str = None):
     check_auth(x_api_key)
     if not _v2_available:
         return {"status": "error", "error": _v2_error}
-    data = _get_v2()
+    data = _cached_v2()
     return {"top_5": data.get("top_5_priorities", []), "next_action": data.get("what_should_i_do_next", {})}
 
 @app.get("/api/v2/next-action")
@@ -2171,7 +2171,9 @@ def v2_action_center(view: str = None, x_api_key: str = None):
     check_auth(x_api_key)
     if not _ledger_available:
         return {"status": "error", "error": _ledger_error}
-    return _action_center_data(view=view)
+    v2_data = _cached_v2() if _v2_available else {}
+    v2_priorities = v2_data.get("top_5_priorities", []) if isinstance(v2_data, dict) and "top_5_priorities" in v2_data else None
+    return _action_center_data(view=view, v2_priorities=v2_priorities)
 
 @app.post("/api/v2/actions/snooze")
 def v2_actions_snooze(payload: dict = None, x_api_key: str = None):

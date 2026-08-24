@@ -634,7 +634,7 @@ def _filter_by_view(items, view):
     return items
 
 
-def get_action_center_data(view=None):
+def get_action_center_data(view=None, v2_priorities=None):
     """Return the unified Action Center payload.
 
     Includes: todays_actions (sorted by priority), overdue_actions,
@@ -647,7 +647,10 @@ def get_action_center_data(view=None):
     pending_follow_ups = get_pending_follow_ups(today=TODAY)
 
     # Pull V2 priorities (consolidated) and convert to action records
-    v2_items = _get_v2_priorities()
+    if v2_priorities is not None:
+        v2_items = v2_priorities
+    else:
+        v2_items = _get_v2_priorities()
     v2_items = consolidate_duplicates(v2_items)
 
     # Build action-shaped records for the Action Center
