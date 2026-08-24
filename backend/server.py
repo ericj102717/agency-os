@@ -108,6 +108,8 @@ _allowed_origins = [
     "http://localhost:5000",
     "http://127.0.0.1:5000",
     "http://localhost:5173",
+    "https://agency-os-flame-ten.vercel.app",
+    "https://agency-os-git-master-ericj102717.vercel.app",
 ]
 # Allow overriding origins via env var (comma-separated)
 _extra_origins = os.environ.get("ALLOWED_ORIGINS", "")
