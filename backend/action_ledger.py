@@ -583,15 +583,25 @@ def get_pending_follow_ups(today=None):
     return due
 
 
+_v2_prio_cache = {"data": None, "ts": 0}
+_V2_PRIO_TTL = 1800  # 30 minutes
+
 def _get_v2_priorities():
     """Best-effort fetch of V2 top priorities for the Action Center.
 
     Returns an empty list if the V2 engine is unavailable so the Action Center
-    still works standalone.
+    still works standalone. Uses a 30-minute cache to avoid recomputing.
     """
+    import time as _t
+    now = _t.time()
+    if _v2_prio_cache["data"] is not None and (now - _v2_prio_cache["ts"]) <= _V2_PRIO_TTL:
+        return _v2_prio_cache["data"]
     try:
         from command_center_v2_engine import get_top_5_priorities as _top5
-        return _top5()
+        result = _top5()
+        _v2_prio_cache["data"] = result
+        _v2_prio_cache["ts"] = now
+        return result
     except Exception:
         return []
 
@@ -634,7 +644,7 @@ def _filter_by_view(items, view):
     return items
 
 
-def get_action_center_data(view=None, v2_priorities=None):
+def get_action_center_data(view=None):
     """Return the unified Action Center payload.
 
     Includes: todays_actions (sorted by priority), overdue_actions,
@@ -647,10 +657,7 @@ def get_action_center_data(view=None, v2_priorities=None):
     pending_follow_ups = get_pending_follow_ups(today=TODAY)
 
     # Pull V2 priorities (consolidated) and convert to action records
-    if v2_priorities is not None:
-        v2_items = v2_priorities
-    else:
-        v2_items = _get_v2_priorities()
+    v2_items = _get_v2_priorities()
     v2_items = consolidate_duplicates(v2_items)
 
     # Build action-shaped records for the Action Center

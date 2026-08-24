@@ -2200,9 +2200,10 @@ def v2_action_center(view: str = None, x_api_key: str = None):
     check_auth(x_api_key)
     if not _ledger_available:
         return {"status": "error", "error": _ledger_error}
-    v2_data = _cached_v2() if _v2_available else {}
-    v2_priorities = v2_data.get("top_5_priorities", []) if isinstance(v2_data, dict) and "top_5_priorities" in v2_data else None
-    return _action_center_data(view=view, v2_priorities=v2_priorities)
+    try:
+        return _action_center_data(view=view)
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
 
 @app.post("/api/v2/actions/snooze")
 def v2_actions_snooze(payload: dict = None, x_api_key: str = None):
