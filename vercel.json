@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm run build:client",
+  "buildCommand": "npm run build:client; echo '=== PWD ==='; pwd; echo '=== LS DIST ==='; ls -la dist/ 2>&1; echo '=== LS CLIENT ==='; ls -la client/ 2>&1 | head -5; echo '=== DONE ==='",
   "installCommand": "npm install",
   "outputDirectory": "dist",
   "framework": "vite",
