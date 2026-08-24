@@ -1927,21 +1927,50 @@ except Exception as e:
     _v2_available = False
     _v2_error = str(e)
 
-# ---- CACHE for expensive V2/audit operations (5-minute TTL) ----
+# ---- CACHE for expensive V2/audit operations (30-minute TTL) ----
 import time as _time_mod
+import threading as _threading_mod
 _v2_cache = {"data": None, "ts": 0, "computing": False}
 _v2_needs_cache = {"data": None, "ts": 0}
 _audit_cache = {"data": None, "ts": 0}
 _map_cache = {"data": None, "ts": 0}
-_CACHE_TTL = 1800  # 5 minutes
+_CACHE_TTL = 1800  # 30 minutes
+
+def _refresh_v2_bg():
+    """Refresh V2 cache in background thread (non-blocking)."""
+    if _v2_cache["computing"]:
+        return
+    def _worker():
+        try:
+            _v2_cache["computing"] = True
+            result = _get_v2()
+            _v2_cache["data"] = result
+            _v2_cache["ts"] = _time_mod.time()
+        except Exception as e:
+            print(f"V2 background refresh error: {e}")
+        finally:
+            _v2_cache["computing"] = False
+    t = _threading_mod.Thread(target=_worker, daemon=True)
+    t.start()
 
 def _cached_v2():
     if _v2_available:
         now = _time_mod.time()
-        if _v2_cache["data"] is None or (now - _v2_cache["ts"]) > _CACHE_TTL:
-            _v2_cache["data"] = _get_v2()
-            _v2_cache["ts"] = now
-        return _v2_cache["data"]
+        # If we have fresh cached data, return it
+        if _v2_cache["data"] is not None and (now - _v2_cache["ts"]) <= _CACHE_TTL:
+            return _v2_cache["data"]
+        # If currently computing, return stale data if available, else computing status
+        if _v2_cache["computing"]:
+            if _v2_cache["data"] is not None:
+                return _v2_cache["data"]
+            return {"status": "computing", "message": "Command Center V2 is computing. This takes about 30 seconds on first load."}
+        # If we have stale data, return it and trigger background refresh
+        if _v2_cache["data"] is not None:
+            _refresh_v2_bg()
+            return _v2_cache["data"]
+        # No data yet - trigger background computation and return computing status
+        _refresh_v2_bg()
+        return {"status": "computing", "message": "Command Center V2 is computing. This takes about 30 seconds on first load."}
     return {"status": "error", "error": _v2_error}
 
 def _cached_audit():
@@ -3241,7 +3270,7 @@ def _startup_precompute():
                 print(f"Scorecard pre-compute error: {e}")
         if _v2_available:
             try:
-                _cached_v2()
+                _refresh_v2_bg()
                 _cached_map()
             except Exception as e:
                 print(f"V2 pre-compute error: {e}")
