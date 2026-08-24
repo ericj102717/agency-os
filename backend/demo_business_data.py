@@ -708,8 +708,11 @@ def clear_demo_data(conn):
     for table in other_tables:
         c.execute(f"DELETE FROM {table}")
     
-    # Reset auto-increment sequences
-    c.execute("DELETE FROM sqlite_sequence WHERE name IN ('contacts','opportunities','revenue_records','referral_sources','actions','recommendations','recommendation_feedback','business_memory','services','lead_sources')")
+    # Reset auto-increment sequences (SQLite only — Postgres uses SERIAL, no need)
+    try:
+        c.execute("DELETE FROM sqlite_sequence WHERE name IN ('contacts','opportunities','revenue_records','referral_sources','actions','recommendations','recommendation_feedback','business_memory','services','lead_sources')")
+    except Exception:
+        pass  # sqlite_sequence doesn't exist in Postgres
     
     conn.commit()
 
