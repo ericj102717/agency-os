@@ -189,7 +189,8 @@ CREATE TABLE IF NOT EXISTS actions (
 );
 
 -- 12. recommendations
--- Drop first: War Room app created this table with different columns
+-- Drop both first (feedback has FK to recommendations): War Room app created these with different columns
+DROP TABLE IF EXISTS recommendation_feedback;
 DROP TABLE IF EXISTS recommendations;
 CREATE TABLE recommendations (
     id SERIAL PRIMARY KEY,
@@ -210,8 +211,6 @@ CREATE TABLE recommendations (
 );
 
 -- 13. recommendation_feedback
--- Drop first: War Room app created this table with different columns
-DROP TABLE IF EXISTS recommendation_feedback;
 CREATE TABLE recommendation_feedback (
     id SERIAL PRIMARY KEY,
     rec_id TEXT NOT NULL,
