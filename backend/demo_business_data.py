@@ -720,13 +720,19 @@ def has_real_user_data(conn):
     """Check if any non-sample user data exists in the database."""
     c = conn.cursor()
     # Check contacts for non-sample records
-    row = c.execute("SELECT COUNT(*) FROM contacts WHERE is_sample = 0 AND first_name NOT LIKE '%[SAMPLE]%'").fetchone()
-    if row and row[0] > 0:
-        return True
+    c.execute("SELECT COUNT(*) AS cnt FROM contacts WHERE is_sample = 0 AND first_name NOT LIKE '%[SAMPLE]%'")
+    row = c.fetchone()
+    if row:
+        cnt = row["cnt"] if isinstance(row, dict) else row[0]
+        if cnt and cnt > 0:
+            return True
     # Check revenue for non-sample records
-    row = c.execute("SELECT COUNT(*) FROM revenue_records WHERE is_sample = 0").fetchone()
-    if row and row[0] > 0:
-        return True
+    c.execute("SELECT COUNT(*) AS cnt FROM revenue_records WHERE is_sample = 0")
+    row = c.fetchone()
+    if row:
+        cnt = row["cnt"] if isinstance(row, dict) else row[0]
+        if cnt and cnt > 0:
+            return True
     return False
 
 def materialize_demo(business_id, scenario_id="balanced"):
@@ -734,26 +740,33 @@ def materialize_demo(business_id, scenario_id="balanced"):
     business = DEMO_BUSINESSES[business_id]
     scenario = SCENARIOS[scenario_id]
     
-    # Use data_store for DB abstraction (Postgres when DATABASE_URL is set)
-    import db as _dbmod
-    conn = _dbmod.get_conn()
-    is_pg = _dbmod.DB_TYPE == "postgres"
+    # Use raw psycopg2 connection directly (bypass wrapper to avoid recursion)
+    import psycopg2
+    from psycopg2 import extras as pg_extras
+    DATABASE_URL = os.environ.get("DATABASE_URL", "")
+    if not DATABASE_URL:
+        # SQLite fallback
+        conn = sqlite3.connect(DB_PATH)
+        conn.execute("PRAGMA journal_mode=WAL")
+        is_pg = False
+    else:
+        conn = psycopg2.connect(DATABASE_URL, cursor_factory=pg_extras.RealDictCursor)
+        is_pg = True
     
     def _exec(sql, params=None):
         """Execute SQL with auto-translation for Postgres."""
         if is_pg:
             sql = sql.replace("?", "%s")
-            sql = sql.replace("INSERT OR IGNORE", "INSERT")
-            sql = sql.replace("INSERT OR REPLACE", "INSERT")
+            sql = sql.replace("INSERT OR IGNORE INTO", "INSERT INTO")
+            sql = sql.replace("INSERT OR REPLACE INTO", "INSERT INTO")
             sql = sql.replace("datetime('now')", "NOW()")
-            # Add ON CONFLICT DO NOTHING for INSERT OR IGNORE
-            if "INSERT" in sql and "ON CONFLICT" not in sql and "OR IGNORE" not in sql:
-                pass  # Let it fail on conflict — we cleared data first
-        return _exec(sql, params)
+        cur = conn.cursor()
+        cur.execute(sql, params)
+        return cur
     
     # Check for real user data - block if found
     if has_real_user_data(conn):
-        _dbmod.return_conn(conn)
+        conn.close()
         raise ValueError("Cannot activate demo mode: real user data exists. Clear your data first.")
     
     # Clear existing data
@@ -909,7 +922,7 @@ def materialize_demo(business_id, scenario_id="balanced"):
             VALUES (1, 1, ?, ?, datetime('now'))
         """, (business_id, scenario_id))
     conn.commit()
-    _dbmod.return_conn(conn)
+    conn.close()
     
     # Return summary
     return {
