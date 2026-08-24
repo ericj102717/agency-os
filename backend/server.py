@@ -1463,6 +1463,35 @@ def get_clv_intelligence_data() -> Dict[str, Any]:
 def health():
     return {"status": "healthy", "server": "Unified Command Center", "port": 8020, "agents": 12}
 
+@app.get("/api/admin/init-schema")
+def init_schema(x_api_key: str = None):
+    """Manually trigger database schema initialization. Returns detailed status."""
+    check_auth(x_api_key)
+    results = []
+    try:
+        import db as _dbmod
+        results.append(f"DB_TYPE: {_dbmod.DB_TYPE}")
+        results.append(f"DATABASE_URL set: {bool(_dbmod.DATABASE_URL)}")
+        if _dbmod.DB_TYPE == "postgres":
+            results.append("Running init_db()...")
+            _dbmod.init_db()
+            results.append("Schema init completed")
+            conn = _dbmod.get_conn()
+            try:
+                cursor = conn.cursor()
+                cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename;")
+                tables = [row[0] if isinstance(row, tuple) else row.get('tablename', str(row)) for row in cursor.fetchall()]
+                results.append(f"Tables: {tables}")
+            finally:
+                _dbmod.return_conn(conn)
+        else:
+            results.append("Using SQLite — no Postgres init needed")
+    except Exception as e:
+        import traceback
+        results.append(f"ERROR: {e}")
+        results.append(traceback.format_exc()[:500])
+    return {"status": "ok", "results": results}
+
 @app.get("/api/summary")
 def quick_summary(x_api_key: str = None):
     """Lightweight summary for fast initial dashboard render."""
