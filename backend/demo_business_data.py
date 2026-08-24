@@ -735,9 +735,9 @@ def materialize_demo(business_id, scenario_id="balanced"):
     scenario = SCENARIOS[scenario_id]
     
     # Use data_store for DB abstraction (Postgres when DATABASE_URL is set)
-    import data_store
-    conn = data_store.get_conn()
-    is_pg = data_store.DB_TYPE == "postgres"
+    import db as _dbmod
+    conn = _dbmod.get_conn()
+    is_pg = _dbmod.DB_TYPE == "postgres"
     
     def _exec(sql, params=None):
         """Execute SQL with auto-translation for Postgres."""
@@ -753,7 +753,7 @@ def materialize_demo(business_id, scenario_id="balanced"):
     
     # Check for real user data - block if found
     if has_real_user_data(conn):
-        data_store.return_conn(conn)
+        _dbmod.return_conn(conn)
         raise ValueError("Cannot activate demo mode: real user data exists. Clear your data first.")
     
     # Clear existing data
@@ -909,7 +909,7 @@ def materialize_demo(business_id, scenario_id="balanced"):
             VALUES (1, 1, ?, ?, datetime('now'))
         """, (business_id, scenario_id))
     conn.commit()
-    data_store.return_conn(conn)
+    _dbmod.return_conn(conn)
     
     # Return summary
     return {
