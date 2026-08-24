@@ -24,19 +24,38 @@ from typing import Any, Dict, List, Optional, Tuple
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.db")
 
+# Use db.py abstraction when DATABASE_URL is set (Postgres), fall back to SQLite
+import db as _dbmod
+_PG = _dbmod.DB_TYPE == "postgres"
 
-def _get_conn() -> sqlite3.Connection:
+def _get_conn():
+    if _PG:
+        return _dbmod.get_conn()
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
+
+def _return_conn(conn):
+    if _PG:
+        _dbmod.return_conn(conn)
+    else:
+        _return_conn(conn)
 
 
 def is_demo_mode() -> bool:
     """Check if demo mode is currently active."""
     try:
         conn = _get_conn()
+        # Try Postgres schema
+        try:
+            row = conn.execute("SELECT business_id FROM demo_state WHERE business_id IS NOT NULL LIMIT 1").fetchone()
+            _return_conn(conn)
+            return bool(row and row[0])
+        except Exception:
+            pass
+        # Fall back to SQLite schema
         row = conn.execute("SELECT is_demo_mode FROM demo_state WHERE id = 1").fetchone()
-        conn.close()
+        _return_conn(conn)
         return bool(row[0]) if row else False
     except Exception:
         return False
@@ -60,7 +79,7 @@ def has_data(is_sample: int = 0) -> bool:
         count = conn.execute(
             "SELECT COUNT(*) FROM contacts WHERE is_sample = ?", (is_sample,)
         ).fetchone()[0]
-        conn.close()
+        _return_conn(conn)
         return count > 0
     except Exception:
         return False
@@ -82,7 +101,7 @@ def get_contacts() -> List[Dict[str, Any]]:
                   call_consent, sms_consent, email_consent
            FROM contacts WHERE {filt}"""
     ).fetchall()
-    conn.close()
+    _return_conn(conn)
     contacts = []
     for r in rows:
         c = dict(r)
@@ -109,7 +128,7 @@ def get_opportunities() -> List[Dict[str, Any]]:
                   expected_close, created_date, entered_stage, stage_history
            FROM opportunities WHERE {filt}"""
     ).fetchall()
-    conn.close()
+    _return_conn(conn)
     opps = []
     for r in rows:
         o = dict(r)
@@ -135,7 +154,7 @@ def get_revenue_records() -> List[Dict[str, Any]]:
                   revenue_category, payment_status, source
            FROM revenue_records WHERE {filt}"""
     ).fetchall()
-    conn.close()
+    _return_conn(conn)
     return [dict(r) for r in rows]
 
 
@@ -149,7 +168,7 @@ def get_referral_sources() -> List[Dict[str, Any]]:
                   conversion_rate, total_revenue_generated, last_referral_date, status
            FROM referral_sources WHERE {filt}"""
     ).fetchall()
-    conn.close()
+    _return_conn(conn)
     return [dict(r) for r in rows]
 
 
@@ -167,7 +186,7 @@ def get_tasks() -> List[Dict[str, Any]]:
         ).fetchall()
     except Exception:
         rows = []
-    conn.close()
+    _return_conn(conn)
     tasks = []
     for r in rows:
         t = dict(r)
@@ -197,7 +216,7 @@ def get_appointments() -> List[Dict[str, Any]]:
         ).fetchall()
     except Exception:
         rows = []
-    conn.close()
+    _return_conn(conn)
     appts = []
     for r in rows:
         a = dict(r)
@@ -218,7 +237,7 @@ def get_business_config() -> Dict[str, Any]:
         ).fetchone()
     except Exception:
         row = None
-    conn.close()
+    _return_conn(conn)
     if not row:
         return {
             "business_name": "",
