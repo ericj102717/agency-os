@@ -67,7 +67,7 @@ def _get_pg_conn():
             import psycopg2
             from psycopg2 import pool, extras
             _pg_pool = pool.ThreadedConnectionPool(
-                1, 8,
+                2, 15,
                 DATABASE_URL,
                 cursor_factory=extras.RealDictCursor,
             )
