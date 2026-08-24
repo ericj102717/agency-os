@@ -1469,31 +1469,39 @@ def init_schema(x_api_key: str = None):
     check_auth(x_api_key)
     results = []
     try:
-        import db as _dbmod
         import os as _os
-        results.append(f"DB_TYPE: {_dbmod.DB_TYPE}")
-        results.append(f"DATABASE_URL set: {bool(_dbmod.DATABASE_URL)}")
-        if _dbmod.DB_TYPE == "postgres":
-            # Check migration file directly
-            migration_path = _os.path.join(_dbmod.BASE_DIR, "migrations", "001_supabase_schema.sql")
+        import psycopg2 as _pg2
+        from psycopg2 import extras as _pg2extras
+        results.append(f"DATABASE_URL set: {bool(os.environ.get('DATABASE_URL'))}")
+        db_url = os.environ.get("DATABASE_URL", "")
+        if not db_url:
+            return {"status": "error", "error": "DATABASE_URL not set"}
+        # Use a direct connection — bypass the pool entirely
+        results.append("Creating direct connection...")
+        conn = _pg2.connect(db_url, cursor_factory=_pg2extras.RealDictCursor, connect_timeout=30)
+        try:
+            cursor = conn.cursor()
+            migration_path = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "migrations", "001_supabase_schema.sql")
             results.append(f"Migration path: {migration_path}")
             results.append(f"Migration file exists: {_os.path.exists(migration_path)}")
             if _os.path.exists(migration_path):
                 with open(migration_path) as f:
                     sql = f.read()
                 results.append(f"SQL length: {len(sql)} chars")
-                # Execute SQL directly using psycopg2 cursor
-                conn = _dbmod.get_conn()
+                # Execute entire SQL file at once
                 try:
-                    cursor = conn.cursor()
-                    # Split and execute each statement
+                    cursor.execute(sql)
+                    conn.commit()
+                    results.append("Schema SQL executed successfully")
+                except Exception as e:
+                    # If batch execution fails, try statement by statement
+                    conn.rollback()
                     import re as _re
                     statements = _re.split(r';\s*$', sql, flags=_re.MULTILINE)
-                    results.append(f"Statements to execute: {len(statements)}")
+                    results.append(f"Trying statement by statement: {len(statements)} statements")
                     executed = 0
                     errors = []
                     for stmt in statements:
-                        # Strip comment lines
                         lines = stmt.strip().splitlines()
                         clean = "\n".join(l for l in lines if not l.strip().startswith("--")).strip()
                         if not clean:
@@ -1501,8 +1509,8 @@ def init_schema(x_api_key: str = None):
                         try:
                             cursor.execute(clean)
                             executed += 1
-                        except Exception as e:
-                            err = str(e)
+                        except Exception as e2:
+                            err = str(e2)
                             if "already exists" not in err:
                                 errors.append(f"{clean[:80]}... → {err[:100]}")
                     conn.commit()
@@ -1511,14 +1519,12 @@ def init_schema(x_api_key: str = None):
                         results.append(f"Errors ({len(errors)}):")
                         for e in errors[:5]:
                             results.append(f"  - {e}")
-                    # List tables
-                    cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename;")
-                    tables = [row[0] if isinstance(row, tuple) else row.get('tablename', str(row)) for row in cursor.fetchall()]
-                    results.append(f"All tables: {tables}")
-                finally:
-                    _dbmod.return_conn(conn)
-        else:
-            results.append("Using SQLite — no Postgres init needed")
+            # List tables
+            cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename;")
+            tables = [row[0] if isinstance(row, tuple) else row.get('tablename', str(row)) for row in cursor.fetchall()]
+            results.append(f"All tables: {tables}")
+        finally:
+            conn.close()
     except Exception as e:
         import traceback
         results.append(f"ERROR: {e}")
