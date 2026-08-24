@@ -3,7 +3,7 @@
   "buildCommand": "npm run build:client",
   "installCommand": "npm install",
   "outputDirectory": "dist/public",
-  "framework": "vite",
+  "framework": null,
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
