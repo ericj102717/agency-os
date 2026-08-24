@@ -1470,20 +1470,53 @@ def init_schema(x_api_key: str = None):
     results = []
     try:
         import db as _dbmod
+        import os as _os
         results.append(f"DB_TYPE: {_dbmod.DB_TYPE}")
         results.append(f"DATABASE_URL set: {bool(_dbmod.DATABASE_URL)}")
         if _dbmod.DB_TYPE == "postgres":
-            results.append("Running init_db()...")
-            _dbmod.init_db()
-            results.append("Schema init completed")
-            conn = _dbmod.get_conn()
-            try:
-                cursor = conn.cursor()
-                cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename;")
-                tables = [row[0] if isinstance(row, tuple) else row.get('tablename', str(row)) for row in cursor.fetchall()]
-                results.append(f"Tables: {tables}")
-            finally:
-                _dbmod.return_conn(conn)
+            # Check migration file directly
+            migration_path = _os.path.join(_dbmod.BASE_DIR, "migrations", "001_supabase_schema.sql")
+            results.append(f"Migration path: {migration_path}")
+            results.append(f"Migration file exists: {_os.path.exists(migration_path)}")
+            if _os.path.exists(migration_path):
+                with open(migration_path) as f:
+                    sql = f.read()
+                results.append(f"SQL length: {len(sql)} chars")
+                # Execute SQL directly using psycopg2 cursor
+                conn = _dbmod.get_conn()
+                try:
+                    cursor = conn.cursor()
+                    # Split and execute each statement
+                    import re as _re
+                    statements = _re.split(r';\s*$', sql, flags=_re.MULTILINE)
+                    results.append(f"Statements to execute: {len(statements)}")
+                    executed = 0
+                    errors = []
+                    for stmt in statements:
+                        # Strip comment lines
+                        lines = stmt.strip().splitlines()
+                        clean = "\n".join(l for l in lines if not l.strip().startswith("--")).strip()
+                        if not clean:
+                            continue
+                        try:
+                            cursor.execute(clean)
+                            executed += 1
+                        except Exception as e:
+                            err = str(e)
+                            if "already exists" not in err:
+                                errors.append(f"{clean[:80]}... → {err[:100]}")
+                    conn.commit()
+                    results.append(f"Executed: {executed} statements")
+                    if errors:
+                        results.append(f"Errors ({len(errors)}):")
+                        for e in errors[:5]:
+                            results.append(f"  - {e}")
+                    # List tables
+                    cursor.execute("SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename;")
+                    tables = [row[0] if isinstance(row, tuple) else row.get('tablename', str(row)) for row in cursor.fetchall()]
+                    results.append(f"All tables: {tables}")
+                finally:
+                    _dbmod.return_conn(conn)
         else:
             results.append("Using SQLite — no Postgres init needed")
     except Exception as e:
