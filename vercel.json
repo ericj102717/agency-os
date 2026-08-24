@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm run build:client",
+  "buildCommand": "npm run build:client && echo '=== FINDING OUTPUT ===' && find . -name 'index.html' -not -path './node_modules/*' && echo '=== LS DIST ===' && ls -la dist/ 2>&1 || true && echo '=== LS CLIENT/DIST ===' && ls -la client/dist/ 2>&1 || true",
   "installCommand": "npm install",
   "outputDirectory": "dist",
   "framework": "other",
