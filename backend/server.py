@@ -3275,6 +3275,13 @@ def _startup_precompute():
                 _cached_map()
             except Exception as e:
                 print(f"V2 pre-compute error: {e}")
+            # Pre-warm action_ledger's v2 priority cache
+            try:
+                from action_ledger import _get_v2_priorities as _warm_prios
+                _warm_prios()
+                print("Action ledger v2 priorities pre-warmed")
+            except Exception as e:
+                print(f"Action ledger pre-warm error: {e}")
             try:
                 _cached_audit()
             except Exception as e:
