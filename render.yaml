@@ -6,7 +6,7 @@ services:
     runtime: python
     rootDir: .
     buildCommand: pip install -r backend/requirements.txt
-    startCommand: python3 backend/server.py
+    startCommand: bash scripts/start-production.sh
     healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
