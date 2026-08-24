@@ -731,19 +731,33 @@ def materialize_demo(business_id, scenario_id="balanced"):
     business = DEMO_BUSINESSES[business_id]
     scenario = SCENARIOS[scenario_id]
     
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute("PRAGMA journal_mode=WAL")
+    # Use data_store for DB abstraction (Postgres when DATABASE_URL is set)
+    import data_store
+    conn = data_store.get_conn()
+    is_pg = data_store.DB_TYPE == "postgres"
+    
+    def _exec(sql, params=None):
+        """Execute SQL with auto-translation for Postgres."""
+        if is_pg:
+            sql = sql.replace("?", "%s")
+            sql = sql.replace("INSERT OR IGNORE", "INSERT")
+            sql = sql.replace("INSERT OR REPLACE", "INSERT")
+            sql = sql.replace("datetime('now')", "NOW()")
+            # Add ON CONFLICT DO NOTHING for INSERT OR IGNORE
+            if "INSERT" in sql and "ON CONFLICT" not in sql and "OR IGNORE" not in sql:
+                pass  # Let it fail on conflict — we cleared data first
+        return _exec(sql, params)
     
     # Check for real user data - block if found
     if has_real_user_data(conn):
-        conn.close()
+        data_store.return_conn(conn)
         raise ValueError("Cannot activate demo mode: real user data exists. Clear your data first.")
     
     # Clear existing data
     clear_demo_data(conn)
     
     # Update business config
-    conn.execute("""
+    _exec("""
         UPDATE business_config SET
             business_name = ?,
             industry = ?,
@@ -778,7 +792,7 @@ def materialize_demo(business_id, scenario_id="balanced"):
     
     # Insert contacts
     for c in contacts:
-        conn.execute("""
+        _exec("""
             INSERT INTO contacts (contact_id, first_name, last_name, email, phone, contact_type,
                 lead_source, pipeline_stage, medicare_status, email_consent, sms_consent, call_consent,
                 last_activity, client_since, zip_code, state, tags, notes, is_sample)
@@ -792,7 +806,7 @@ def materialize_demo(business_id, scenario_id="balanced"):
     
     # Insert opportunities
     for o in opportunities:
-        conn.execute("""
+        _exec("""
             INSERT INTO opportunities (opp_id, contact_id, product_type, stage, entered_stage,
                 expected_close, estimated_value, created_date, is_sample)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
@@ -803,7 +817,7 @@ def materialize_demo(business_id, scenario_id="balanced"):
     
     # Insert revenue records
     for r in revenue:
-        conn.execute("""
+        _exec("""
             INSERT INTO revenue_records (record_id, contact_id, product_type, amount,
                 revenue_date, revenue_category, payment_status, source, is_sample)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
@@ -814,7 +828,7 @@ def materialize_demo(business_id, scenario_id="balanced"):
     
     # Insert referral sources
     for r in referrals:
-        conn.execute("""
+        _exec("""
             INSERT INTO referral_sources (source_id, source_name, source_type, contact_info,
                 relationship_strength, referrals_generated, referrals_converted, conversion_rate,
                 total_revenue_generated, last_referral_date, status, is_sample)
@@ -827,7 +841,7 @@ def materialize_demo(business_id, scenario_id="balanced"):
     
     # Insert actions
     for a in actions:
-        conn.execute("""
+        _exec("""
             INSERT INTO actions (action_id, entity_type, entity_id, entity_name, action_type,
                 title, description, priority, due_date, status, completed_date, expected_value,
                 actual_outcome, recommendation_id, source_module)
@@ -841,7 +855,7 @@ def materialize_demo(business_id, scenario_id="balanced"):
     
     # Insert recommendations
     for r in recommendations:
-        conn.execute("""
+        _exec("""
             INSERT INTO recommendations (rec_id, entity_type, entity_id, rec_type, title,
                 description, priority, expected_impact, ignore_consequence, next_step,
                 explanation_data, status)
@@ -854,7 +868,7 @@ def materialize_demo(business_id, scenario_id="balanced"):
     
     # Insert business memory
     for m in memories:
-        conn.execute("""
+        _exec("""
             INSERT INTO business_memory (memory_id, entity_type, entity_id, entity_name,
                 memory_text, memory_category, relevance_score)
             VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -865,14 +879,14 @@ def materialize_demo(business_id, scenario_id="balanced"):
     
     # Insert lead sources
     for ls in lead_sources:
-        conn.execute("""
+        _exec("""
             INSERT OR IGNORE INTO lead_sources (name, description, is_active, sort_order)
             VALUES (?, ?, ?, ?)
         """, (ls["name"], ls["description"], ls["is_active"], ls["sort_order"]))
     
     # Insert services
     for s in services:
-        conn.execute("""
+        _exec("""
             INSERT OR IGNORE INTO services (name, description, avg_price, category, is_active, sort_order)
             VALUES (?, ?, ?, ?, ?, ?)
         """, (s["name"], s["description"], s["avg_price"], s["category"], s["is_active"], s["sort_order"]))
@@ -880,12 +894,19 @@ def materialize_demo(business_id, scenario_id="balanced"):
     conn.commit()
     
     # Set demo state
-    conn.execute("""
-        INSERT OR REPLACE INTO demo_state (id, is_demo_mode, business_id, scenario_id, updated_at)
-        VALUES (1, 1, ?, ?, datetime('now'))
-    """, (business_id, scenario_id))
+    if is_pg:
+        _exec("""
+            INSERT INTO demo_state (business_id, scenario_id, state_json)
+            VALUES (%s, %s, %s)
+            ON CONFLICT DO NOTHING
+        """, (business_id, scenario_id, '{}'))
+    else:
+        _exec("""
+            INSERT OR REPLACE INTO demo_state (id, is_demo_mode, business_id, scenario_id, updated_at)
+            VALUES (1, 1, ?, ?, datetime('now'))
+        """, (business_id, scenario_id))
     conn.commit()
-    conn.close()
+    data_store.return_conn(conn)
     
     # Return summary
     return {
