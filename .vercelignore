@@ -1,0 +1,5 @@
+backend/
+server/
+scripts/
+*.py
+attached_assets/
