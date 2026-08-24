@@ -609,6 +609,15 @@ def _is_demo_mode() -> bool:
     """Check if demo mode is currently active."""
     try:
         conn = get_conn()
+        # Try Postgres schema (business_id, scenario_id, state_json)
+        try:
+            row = conn.execute("SELECT business_id FROM demo_state WHERE business_id IS NOT NULL LIMIT 1").fetchone()
+            if row:
+                return bool(row[0])
+            return False
+        except Exception:
+            pass
+        # Fall back to SQLite schema (id, is_demo_mode, business_id, scenario_id)
         row = conn.execute("SELECT is_demo_mode FROM demo_state WHERE id = 1").fetchone()
         return bool(row[0]) if row else False
     except Exception:
