@@ -7,6 +7,7 @@ Each demo business gets a complete dataset that powers all existing features.
 
 import sqlite3
 import json
+import os
 import uuid
 import random
 from datetime import datetime, timedelta, date
