@@ -9,6 +9,8 @@ import { Sidebar } from "@/components/sidebar";
 import { Topbar } from "@/components/topbar";
 import { ActionModals } from "@/components/modals";
 import { WriteKeyGate } from "@/components/write-key-gate";
+import { useAuth } from "@/lib/use-auth";
+import { LoginPage } from "@/pages/login";
 import { HomePage } from "@/pages/home";
 import { LeadScoringPage } from "@/pages/lead-scoring";
 import { CLVPage } from "@/pages/clv";
@@ -43,6 +45,22 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 }
 
 function AppRouter() {
+  const { user, loading, isAuthEnabled } = useAuth();
+
+  // Show loading spinner while checking auth
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
+
+  // Auth gate — if auth is enabled and user is not signed in, show login
+  if (isAuthEnabled && !user) {
+    return <LoginPage />;
+  }
+
   return (
     <AppLayout>
       <Switch>

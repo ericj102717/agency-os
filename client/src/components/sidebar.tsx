@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, Moon, Sun, Activity } from "lucide-react";
+import { Menu, X, Moon, Sun, Activity, LogOut } from "lucide-react";
 import { navGroups } from "@/lib/nav";
 import { useTheme } from "@/lib/theme";
+import { useAuth } from "@/lib/use-auth";
 import { cn } from "@/lib/utils";
 
 export function Sidebar() {
   const [location] = useLocation();
   const { theme, toggleTheme } = useTheme();
+  const { user, isAuthEnabled, signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<string[]>(["Home"]);
 
@@ -143,6 +145,18 @@ export function Sidebar() {
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
           </button>
+          {isAuthEnabled && user && (
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs text-muted-foreground truncate">{user.email}</span>
+              <button
+                onClick={() => signOut()}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                title="Sign out"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </div>
+          )}
         </div>
       </aside>
     </>
