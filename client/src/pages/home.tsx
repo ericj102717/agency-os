@@ -3,11 +3,12 @@ import { Link } from "wouter";
 import { AlertTriangle, TrendingUp, Users, Target, GitBranch, ArrowRight, CheckSquare } from "lucide-react";
 import { useSummary, useCommandCenter, API_BASE } from "@/lib/queryClient";
 import { KPICard, SectionHeader, Card, CardContent } from "@/components/ui-widgets";
+import { DashboardSkeleton, ErrorState, ComputingState, LastRefreshed } from "@/components/query-states";
 import { fmtCurrency, fmtPct } from "@/lib/format";
 import type { SummaryResponse, CommandCenterData } from "@shared/types";
 
 export function HomePage() {
-  const { data: summary } = useQuery<SummaryResponse>({
+  const summaryQuery = useQuery<SummaryResponse>({
     queryKey: ["/api/summary"],
     queryFn: async () => {
       const res = await fetch(`${API_BASE}/api/summary`);
@@ -17,7 +18,7 @@ export function HomePage() {
     staleTime: 60_000,
   });
 
-  const { data: cc } = useQuery<CommandCenterData>({
+  const ccQuery = useQuery<CommandCenterData>({
     queryKey: ["/api/command-center"],
     queryFn: async () => {
       const res = await fetch(`${API_BASE}/api/command-center`);
@@ -26,6 +27,30 @@ export function HomePage() {
     },
     staleTime: 60_000,
   });
+
+  const summary = summaryQuery.data;
+  const cc = ccQuery.data;
+
+  // Loading state
+  if (summaryQuery.isLoading || ccQuery.isLoading) {
+    return <DashboardSkeleton />;
+  }
+
+  // Computing state (async cache warming)
+  const isComputing = (cc && typeof cc === "object" && "status" in cc && (cc as any).status === "computing");
+  if (isComputing) {
+    return <ComputingState />;
+  }
+
+  // Error state
+  if (summaryQuery.isError || ccQuery.isError) {
+    return (
+      <ErrorState
+        message="Failed to load dashboard data. The backend may be starting up."
+        onRetry={() => { summaryQuery.refetch(); ccQuery.refetch(); }}
+      />
+    );
+  }
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
@@ -86,11 +111,14 @@ export function HomePage() {
   return (
     <div className="space-y-6">
       {/* Greeting */}
-      <div>
-        <h2 className="text-xl font-semibold text-foreground">{greeting}. Here's what matters today.</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Recommendations are draft suggestions until you approve them. {isDemo ? "Showing demo data." : ""}
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold text-foreground">{greeting}. Here's what matters today.</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Recommendations are draft suggestions until you approve them. {isDemo ? "Showing demo data." : ""}
+          </p>
+        </div>
+        <LastRefreshed timestamp={summaryQuery.dataUpdatedAt} />
       </div>
 
       {isDemo && (

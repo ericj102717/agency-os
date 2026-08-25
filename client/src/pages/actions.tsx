@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { API_BASE, mutationFetch } from "@/lib/queryClient";
 import { Card, CardContent, SectionHeader } from "@/components/ui-widgets";
+import { CardListSkeleton, ErrorState, EmptyState, LastRefreshed } from "@/components/query-states";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -538,7 +539,7 @@ export function ActionsPage() {
       ? "dismissed"
       : undefined;
 
-  const { data } = useQuery<ActionsResponse>({
+  const { data, isLoading, isError, error, refetch } = useQuery<ActionsResponse>({
     queryKey: ["/api/action-center", { filter }],
     queryFn: async () => {
       const params = new URLSearchParams({
@@ -557,6 +558,42 @@ export function ActionsPage() {
 
   const actions = data?.actions ?? [];
   const counts = data?.counts ?? {};
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <SectionHeader title="Action Center" subtitle="Loading actions..." />
+        <CardListSkeleton count={5} />
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="space-y-6">
+        <SectionHeader title="Action Center" />
+        <ErrorState
+          message={`Failed to load actions: ${(error as Error)?.message}`}
+          onRetry={() => refetch()}
+        />
+      </div>
+    );
+  }
+
+  // Empty state
+  if (actions.length === 0) {
+    return (
+      <div className="space-y-6">
+        <SectionHeader title="Action Center" />
+        <EmptyState
+          title="No actions pending"
+          message="New recommendations will appear here as your data is processed."
+        />
+      </div>
+    );
+  }
 
   const openAction = (id: string) => {
     setSelectedActionId(id);

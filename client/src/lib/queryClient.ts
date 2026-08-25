@@ -148,17 +148,38 @@ export async function mutationFetch(
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
+
+/**
+ * Query function that detects "computing" status and auto-refetches.
+ * When the backend returns {"status": "computing"}, it waits 3s and retries,
+ * up to 20 times (60s total).
+ */
 export const getQueryFn: <T>(options: {
   on401: UnauthorizedBehavior;
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
-  async ({ queryKey }) => {
+  async ({ queryKey, meta }) => {
+    const computingRetries = (meta as any)?.computingRetries ?? 0;
     const res = await fetch(`${API_BASE}${queryKey.join("/")}`);
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
       return null;
     }
+    // Retry on 502/503 (backend spinning up or unavailable)
+    if (res.status === 502 || res.status === 503) {
+      if (computingRetries < 5) {
+        await new Promise(r => setTimeout(r, 3000));
+        return getQueryFn<T>({ on401: unauthorizedBehavior })({ queryKey, meta: { computingRetries: computingRetries + 1 } } as any);
+      }
+      throw new Error(`Backend unavailable (${res.status}). It may be starting up.`);
+    }
     await throwIfResNotOk(res);
-    return await res.json();
+    const data = await res.json();
+    // Detect async cache "computing" status and auto-refetch
+    if (data && typeof data === "object" && data.status === "computing" && computingRetries < 20) {
+      await new Promise(r => setTimeout(r, 3000));
+      return getQueryFn<T>({ on401: unauthorizedBehavior })({ queryKey, meta: { computingRetries: computingRetries + 1 } } as any);
+    }
+    return data;
   };
 
 export const queryClient = new QueryClient({
@@ -166,9 +187,10 @@ export const queryClient = new QueryClient({
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true,
       staleTime: 60_000,
-      retry: 1,
+      retry: 2,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
     },
     mutations: {
       retry: false,
