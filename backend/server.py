@@ -100,6 +100,9 @@ from feedback_engine import FeedbackEngine
 
 app = FastAPI(title="Agency OS — Unified Command Center", version="1.0.0")
 
+import time as _time_mod
+_SERVER_START_TIME = _time_mod.time()
+
 _allowed_origins = [
     "https://commandcenter-hq.pplx.app",
     "https://mission-control-app.pplx.app",
@@ -125,10 +128,11 @@ app.add_middleware(
     allow_credentials=True,
 )
 
-# Request timing middleware
+# Request timing middleware with structured logging
 @app.middleware("http")
 async def request_timing_middleware(request, call_next):
     import time as _time
+    import json as _json
     start = _time.time()
     response = await call_next(request)
     duration = (_time.time() - start) * 1000
@@ -140,6 +144,17 @@ async def request_timing_middleware(request, call_next):
     if "/api/admin/health" not in path:
         status = "success" if response.status_code < 400 else "failed"
         _health_monitor.record_timing("api", f"{method} {path}", duration, status)
+
+        # Structured log line (JSON for easy parsing)
+        log_entry = _json.dumps({
+            "ts": _time.strftime("%Y-%m-%dT%H:%M:%S", _time.gmtime()),
+            "method": method,
+            "path": path,
+            "status": response.status_code,
+            "duration_ms": round(duration),
+            "level": "WARNING" if duration > 5000 else "INFO",
+        })
+        print(log_entry, flush=True)
 
         if duration > 10000:
             _health_monitor.record_event("api", "slow_request", "WARNING",
@@ -1501,7 +1516,25 @@ def get_clv_intelligence_data() -> Dict[str, Any]:
 
 @app.get("/health")
 def health():
-    return {"status": "healthy", "server": "Unified Command Center", "port": 8020, "agents": 12}
+    import time as _t
+    now = _t.time()
+    # Cache status
+    caches = {
+        "v2": _v2_cache.get("data") is not None if isinstance(_v2_cache, dict) else None,
+        "v2_age_s": round(now - _v2_cache.get("ts", 0), 1) if isinstance(_v2_cache, dict) and _v2_cache.get("ts") else None,
+        "command_center": _cc_cache.get("data") is not None if isinstance(_cc_cache, dict) else None,
+        "cc_age_s": round(now - _cc_cache.get("ts", 0), 1) if isinstance(_cc_cache, dict) and _cc_cache.get("ts") else None,
+        "clv": _clv_cache.get("data") is not None if isinstance(_clv_cache, dict) else None,
+        "clv_age_s": round(now - _clv_cache.get("ts", 0), 1) if isinstance(_clv_cache, dict) and _clv_cache.get("ts") else None,
+    }
+    return {
+        "status": "healthy",
+        "server": "Unified Command Center",
+        "port": int(os.environ.get("PORT", "8020")),
+        "agents": 12,
+        "caches": caches,
+        "uptime_s": round(now - _SERVER_START_TIME, 1) if _SERVER_START_TIME else None,
+    }
 
 @app.get("/api/admin/init-schema")
 def init_schema(x_api_key: str = None):
