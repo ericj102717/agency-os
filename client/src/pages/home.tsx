@@ -204,7 +204,8 @@ export function HomePage() {
                 <p className="text-sm text-muted-foreground">No actions pending.</p>
               ) : (
                 actions.slice(0, 5).map((action, i) => (
-                  <div key={i} className="border-b border-border pb-3 last:border-0 last:pb-0">
+                  <Link key={i} href="/actions" className="block hover:bg-muted/50 -mx-2 px-2 py-1 rounded transition-colors">
+                    <div className="border-b border-border pb-3 last:border-0 last:pb-0">
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-bold uppercase ${
                         action.severity === "high" ? "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300"
@@ -217,7 +218,8 @@ export function HomePage() {
                     </div>
                     <div className="text-sm font-medium text-foreground">{action.title}</div>
                     <div className="text-xs text-muted-foreground mt-1">{action.description}</div>
-                  </div>
+                    </div>
+                  </Link>
                 ))
               )}
             </CardContent>

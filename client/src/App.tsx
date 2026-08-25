@@ -9,6 +9,7 @@ import { Sidebar } from "@/components/sidebar";
 import { Topbar } from "@/components/topbar";
 import { ActionModals } from "@/components/modals";
 import { WriteKeyGate } from "@/components/write-key-gate";
+import { CommandPalette } from "@/components/command-palette";
 import { useAuth } from "@/lib/use-auth";
 import { LoginPage } from "@/pages/login";
 import { HomePage } from "@/pages/home";
@@ -40,6 +41,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
       </div>
       <ActionModals />
       <WriteKeyGate />
+      <CommandPalette />
     </div>
   );
 }
