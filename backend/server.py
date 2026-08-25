@@ -1362,6 +1362,43 @@ def get_revenue_forecasting_data() -> Dict[str, Any]:
             "error": str(e),
         }
 
+# CLV Intelligence cache (agent-12) — async background refresh
+_clv_cache = {"data": None, "ts": 0, "computing": False}
+
+def _refresh_clv_bg():
+    """Refresh CLV Intelligence cache in background thread (non-blocking)."""
+    if _clv_cache["computing"]:
+        return
+    def _worker():
+        try:
+            _clv_cache["computing"] = True
+            result = get_clv_intelligence_data()
+            _clv_cache["data"] = result
+            _clv_cache["ts"] = _time_mod.time()
+        except Exception as e:
+            print(f"CLV background refresh error: {e}")
+        finally:
+            _clv_cache["computing"] = False
+    t = _threading_mod.Thread(target=_worker, daemon=True)
+    t.start()
+
+def _cached_clv():
+    """Return cached CLV data, refreshing in background if stale."""
+    now = _time_mod.time()
+    if _clv_cache["data"] is not None and (now - _clv_cache["ts"]) <= _CACHE_TTL:
+        return _clv_cache["data"]
+    if _clv_cache["computing"]:
+        if _clv_cache["data"] is not None:
+            return _clv_cache["data"]
+        return {"agent_name": "CLV Intelligence Dashboard", "phase": 12, "status": "computing",
+                "message": "CLV Intelligence is computing. This takes about 30 seconds on first load."}
+    if _clv_cache["data"] is not None:
+        _refresh_clv_bg()
+        return _clv_cache["data"]
+    _refresh_clv_bg()
+    return {"agent_name": "CLV Intelligence Dashboard", "phase": 12, "status": "computing",
+            "message": "CLV Intelligence is computing. This takes about 30 seconds on first load."}
+
 def get_clv_intelligence_data() -> Dict[str, Any]:
     """Load CLV Intelligence Dashboard data from Phase 12."""
     try:
@@ -1832,7 +1869,7 @@ def agent_detail(phase: int, x_api_key: str = None):
               7: get_executive_data, 8: get_what_changed_data,
               9: get_lead_scoring_data, 10: get_referral_intelligence_data,
               11: get_revenue_forecasting_data,
-              12: get_clv_intelligence_data}
+              12: _cached_clv}
     if phase not in agents:
         raise HTTPException(status_code=404, detail="Phase not found")
     _reset_mode_cache()
@@ -3286,6 +3323,12 @@ def _startup_precompute():
                 _cached_audit()
             except Exception as e:
                 print(f"Audit pre-compute error: {e}")
+        # Pre-warm CLV Intelligence cache (agent-12)
+        try:
+            _refresh_clv_bg()
+            print("CLV Intelligence pre-warm started")
+        except Exception as e:
+            print(f"CLV pre-warm error: {e}")
     t = threading.Thread(target=compute, daemon=True)
     t.start()
 
