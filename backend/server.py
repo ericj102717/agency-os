@@ -1768,7 +1768,7 @@ def get_clv_intelligence_light() -> Dict[str, Any]:
     except Exception as e:
         return {"agent_name": "CLV Intelligence Dashboard", "phase": 12, "status": "error", "error": str(e)}
 
-_cc_cache = {"fingerprint": None, "data": None, "ts": 0}
+_cc_cache = {"fingerprint": None, "data": None, "ts": 0, "computing": False}
 
 def _db_fingerprint() -> str:
     """Compute a quick fingerprint of the database state for cache invalidation."""
@@ -1802,63 +1802,62 @@ def command_center(x_api_key: str = None):
     if _cc_cache["data"] is not None and _cc_cache["fingerprint"] == fp and (now - _cc_cache["ts"]) < _CACHE_TTL:
         return _cc_cache["data"]
     
-    # Use lightweight Phase 11/12 for command center performance
-    _exec = get_executive_data()
-    _wc = get_what_changed_data()
-    _ls = get_lead_scoring_data()
-    _ri = get_referral_intelligence_data()
-    _rf = get_revenue_forecasting_light()
-    _clv = get_clv_intelligence_light()
+    # If stale data exists, return it and refresh in background
+    if _cc_cache["data"] is not None:
+        _refresh_cc_bg(fp)
+        return _cc_cache["data"]
     
-    _exec_s = _strip_sample_in_real_mode(_exec)
-    _wc_s = _strip_sample_in_real_mode(_wc)
-    _ls_s = _strip_sample_in_real_mode(_ls)
-    _ri_s = _strip_sample_in_real_mode(_ri)
-    _rf_s = _strip_sample_in_real_mode(_rf)
-    _clv_s = _strip_sample_in_real_mode(_clv)
-    
-    result = {
-        "scan_date": date.today().isoformat(),
-        "agents": [
-            get_phase1_data(),
-            get_phase2_data(),
-            get_phase3_data(),
-            get_phase4_data(),
-            get_phase5_data(),
-            get_phase6_data(),
-            _exec_s,
-            _wc_s,
-            _ls_s,
-            _ri_s,
-            _rf_s,
-            _clv_s,
-        ],
-        "executive": _exec_s,
-        "what_changed": _wc_s,
-        "lead_scoring": _ls_s,
-        "referral_intelligence": _ri_s,
-        "revenue_forecasting": _rf_s,
-        "clv_intelligence": _clv_s,
-        "pipeline": get_pipeline_summary(),
-        "compliance": get_compliance_summary(),
-        "action_queue": get_action_queue(),
-        "charts": get_charts_data(),
-        "summary": {
-            "total_scripts": 143,
-            "total_endpoints": 138,
-            "api_ports": "8000-8012",
-            "monthly_cost": "$113",
-            "hours_saved_weekly": "80-85",
-            "phases_built": 12,
-        },
-    }
-    
-    # Cache the result
-    _cc_cache["fingerprint"] = fp
-    _cc_cache["data"] = result
-    _cc_cache["ts"] = now
-    
-    return result
+    # No cached data — trigger background computation
+    _refresh_cc_bg(fp)
+    return {"status": "computing", "message": "Command Center is computing dashboard data. This takes about 30 seconds on first load."}
+
+def _refresh_cc_bg(fp=None):
+    """Refresh command-center cache in background thread (non-blocking)."""
+    if _cc_cache.get("computing"):
+        return
+    def _worker():
+        try:
+            _cc_cache["computing"] = True
+            _reset_mode_cache()
+            _exec = get_executive_data()
+            _wc = get_what_changed_data()
+            _ls = get_lead_scoring_data()
+            _ri = get_referral_intelligence_data()
+            _rf = get_revenue_forecasting_light()
+            _clv = get_clv_intelligence_light()
+            _exec_s = _strip_sample_in_real_mode(_exec)
+            _wc_s = _strip_sample_in_real_mode(_wc)
+            _ls_s = _strip_sample_in_real_mode(_ls)
+            _ri_s = _strip_sample_in_real_mode(_ri)
+            _rf_s = _strip_sample_in_real_mode(_rf)
+            _clv_s = _strip_sample_in_real_mode(_clv)
+            result = {
+                "scan_date": date.today().isoformat(),
+                "agents": [
+                    get_phase1_data(), get_phase2_data(), get_phase3_data(),
+                    get_phase4_data(), get_phase5_data(), get_phase6_data(),
+                    _exec_s, _wc_s, _ls_s, _ri_s, _rf_s, _clv_s,
+                ],
+                "executive": _exec_s, "what_changed": _wc_s,
+                "lead_scoring": _ls_s, "referral_intelligence": _ri_s,
+                "revenue_forecasting": _rf_s, "clv_intelligence": _clv_s,
+                "pipeline": get_pipeline_summary(),
+                "compliance": get_compliance_summary(),
+                "action_queue": get_action_queue(),
+                "charts": get_charts_data(),
+                "summary": {"total_scripts": 143, "total_endpoints": 138,
+                            "api_ports": "8000-8012", "monthly_cost": "$113",
+                            "hours_saved_weekly": "80-85", "phases_built": 12},
+            }
+            _cc_cache["fingerprint"] = fp or _db_fingerprint()
+            _cc_cache["data"] = result
+            _cc_cache["ts"] = _time_mod.time()
+        except Exception as e:
+            print(f"Command Center background refresh error: {e}")
+        finally:
+            _cc_cache["computing"] = False
+    t = _threading_mod.Thread(target=_worker, daemon=True)
+    t.start()
 
 @app.get("/api/agent/{phase}")
 def agent_detail(phase: int, x_api_key: str = None):
@@ -3329,6 +3328,12 @@ def _startup_precompute():
             print("CLV Intelligence pre-warm started")
         except Exception as e:
             print(f"CLV pre-warm error: {e}")
+        # Pre-warm command-center cache
+        try:
+            _refresh_cc_bg()
+            print("Command Center pre-warm started")
+        except Exception as e:
+            print(f"Command Center pre-warm error: {e}")
     t = threading.Thread(target=compute, daemon=True)
     t.start()
 
