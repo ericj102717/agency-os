@@ -8,6 +8,7 @@ services:
     buildCommand: pip install -r backend/requirements.txt
     startCommand: bash scripts/start-production.sh
     healthCheckPath: /health
+    plan: starter  # $7/mo — always-on, no spin-down, 512MB RAM
     envVars:
       - key: DATABASE_URL
         sync: false  # Set manually in Render dashboard — do NOT commit credentials
