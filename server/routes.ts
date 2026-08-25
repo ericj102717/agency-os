@@ -72,7 +72,7 @@ function proxyToFastAPI(req: any, res: any) {
   });
 
   // --- Timeout so backend hangs can't hold Express open ---
-  proxyReq.setTimeout(15000, () => {
+  proxyReq.setTimeout(60000, () => {
     proxyReq.destroy(new Error('Backend timeout'));
   });
 
