@@ -104,6 +104,7 @@ _allowed_origins = [
     "https://commandcenter-hq.pplx.app",
     "https://mission-control-app.pplx.app",
     "https://mission-control-hq.pplx.app",
+    "https://mission-control-hq-app.pplx.app",
     "https://www.perplexity.ai",
     "http://localhost:5000",
     "http://127.0.0.1:5000",
@@ -120,7 +121,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=_allowed_origins,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
+    allow_headers=["Content-Type", "X-API-Key", "X-Command-Center-Write-Key", "X-Admin-Key"],
     allow_credentials=True,
 )
 

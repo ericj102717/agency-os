@@ -17,10 +17,17 @@ fi
 export AGENCY_API_KEY=${AGENCY_API_KEY:-$($PY -c "import secrets; print(secrets.token_hex(32))")}
 export AGENCY_WRITE_KEY=${AGENCY_WRITE_KEY:-"nMHKbJCRkpTgHyqEy0acrakD1hDWOe3p6yd6QKEOxLU"}
 
-# Set DATABASE_URL (Supabase pooler)
+# Set DATABASE_URL from credential injection or env var — NEVER hardcoded
 SUPABASE_PROJECT="jpeavskedjffubzojdmu"
-SUPABASE_PASS="Uo7HUK00Eaju4YJ7"
-export DATABASE_URL="postgresql://postgres.${SUPABASE_PROJECT}:${SUPABASE_PASS}@aws-0-us-west-2.pooler.supabase.com:6543/postgres"
+if [ -n "${CUSTOM_CRED_DB_JPEAVSKEDJFFUBZOJDMU_SUPABASE_CO_TOKEN:-}" ]; then
+  DB_PASS="$CUSTOM_CRED_DB_JPEAVSKEDJFFUBZOJDMU_SUPABASE_CO_TOKEN"
+  export DATABASE_URL="postgresql://postgres.${SUPABASE_PROJECT}:${DB_PASS}@aws-0-us-west-2.pooler.supabase.com:6543/postgres"
+  echo "DATABASE_URL set from credential injection"
+elif [ -n "${DATABASE_URL:-}" ]; then
+  echo "DATABASE_URL already set in environment"
+else
+  echo "WARNING: No DATABASE_URL or credential found — using SQLite fallback"
+fi
 
 # Bootstrap FastAPI in the background
 bootstrap_fastapi() {
@@ -37,7 +44,7 @@ bootstrap_fastapi() {
 
   # Start FastAPI
   echo "[bootstrap] Starting FastAPI on port 8088..."
-  (cd backend && PORT=8088 HOST=127.0.0.1 AGENCY_API_KEY="$AGENCY_API_KEY" DATABASE_URL="$DATABASE_URL" $PY server.py) > /tmp/fastapi.log 2>&1 &
+  (cd backend && PORT=8088 HOST=127.0.0.1 AGENCY_API_KEY="$AGENCY_API_KEY" ${DATABASE_URL:+DATABASE_URL="$DATABASE_URL"} $PY server.py) > /tmp/fastapi.log 2>&1 &
   FASTAPI_PID=$!
   echo "[bootstrap] FastAPI PID: $FASTAPI_PID"
 
@@ -59,5 +66,5 @@ echo "Starting Express on port 5000..."
 NODE_ENV=production \
   AGENCY_API_KEY="$AGENCY_API_KEY" \
   AGENCY_WRITE_KEY="$AGENCY_WRITE_KEY" \
-  DATABASE_URL="$DATABASE_URL" \
+  ${DATABASE_URL:+DATABASE_URL="$DATABASE_URL"} \
   node dist/index.cjs
