@@ -583,27 +583,41 @@ def get_pending_follow_ups(today=None):
     return due
 
 
-_v2_prio_cache = {"data": None, "ts": 0}
+_v2_prio_cache = {"data": None, "ts": 0, "computing": False}
 _V2_PRIO_TTL = 1800  # 30 minutes
 
 def _get_v2_priorities():
     """Best-effort fetch of V2 top priorities for the Action Center.
 
     Returns an empty list if the V2 engine is unavailable so the Action Center
-    still works standalone. Uses a 30-minute cache to avoid recomputing.
+    still works standalone. Uses a 30-minute cache with async background refresh
+    — returns stale data immediately while refreshing in background.
     """
     import time as _t
+    import threading as _th
     now = _t.time()
+
+    # Return fresh cached data
     if _v2_prio_cache["data"] is not None and (now - _v2_prio_cache["ts"]) <= _V2_PRIO_TTL:
         return _v2_prio_cache["data"]
-    try:
-        from command_center_v2_engine import get_top_5_priorities as _top5
-        result = _top5()
-        _v2_prio_cache["data"] = result
-        _v2_prio_cache["ts"] = now
-        return result
-    except Exception:
-        return []
+
+    # Stale or missing — trigger background refresh if not already running
+    if not _v2_prio_cache["computing"]:
+        _v2_prio_cache["computing"] = True
+        def _refresh():
+            try:
+                from command_center_v2_engine import get_top_5_priorities as _top5
+                result = _top5()
+                _v2_prio_cache["data"] = result
+                _v2_prio_cache["ts"] = _t.time()
+            except Exception as e:
+                print(f"v2 priorities background refresh error: {e}")
+            finally:
+                _v2_prio_cache["computing"] = False
+        _th.Thread(target=_refresh, daemon=True).start()
+
+    # Return stale data if available, else empty list (never blocks)
+    return _v2_prio_cache["data"] if _v2_prio_cache["data"] is not None else []
 
 
 def _filter_by_view(items, view):
