@@ -145,8 +145,8 @@ create table if not exists public.agency_opportunities (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   foreign key (agency_id, contact_id) references public.agency_contacts(agency_id, id) on delete restrict,
-  foreign key (agency_id, lead_id) references public.agency_leads(agency_id, id) on delete set null,
-  foreign key (agency_id, client_id) references public.agency_clients(agency_id, id) on delete set null,
+  foreign key (agency_id, lead_id) references public.agency_leads(agency_id, id) on delete restrict,
+  foreign key (agency_id, client_id) references public.agency_clients(agency_id, id) on delete restrict,
   unique (agency_id, id)
 );
 
@@ -165,7 +165,7 @@ create table if not exists public.agency_referrals (
   updated_at timestamptz not null default now(),
   foreign key (agency_id, referrer_contact_id) references public.agency_contacts(agency_id, id) on delete restrict,
   foreign key (agency_id, referred_contact_id) references public.agency_contacts(agency_id, id) on delete restrict,
-  foreign key (agency_id, opportunity_id) references public.agency_opportunities(agency_id, id) on delete set null,
+  foreign key (agency_id, opportunity_id) references public.agency_opportunities(agency_id, id) on delete restrict,
   unique (agency_id, id),
   check (referrer_contact_id <> referred_contact_id)
 );
