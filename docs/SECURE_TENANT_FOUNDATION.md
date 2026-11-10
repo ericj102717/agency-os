@@ -27,10 +27,12 @@ Migrations are never run automatically during application startup. After confirm
 the target is a disposable/staging database and taking a restorable backup, run:
 
 ```bash
+AGENCY_OS_MIGRATION_TARGET=staging \\
+AGENCY_OS_MIGRATION_CONFIRM=APPLY_AGENCY_OS_MIGRATIONS_TO_STAGING \\
 python backend/scripts/run_agency_os_migrations.py
 ```
 
-The runner acquires a PostgreSQL advisory lock, applies 002 then 003 in separate
+The runner refuses to run unless both explicit staging guards are present. It acquires a PostgreSQL advisory lock, applies 002 then 003 in separate
 transactions, records SHA-256 checksums, and stops on the first error. If an applied
 migration file changes, it refuses to continue; create a new migration instead.
 Do not run this against production as part of this iteration.
