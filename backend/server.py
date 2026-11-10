@@ -101,7 +101,10 @@ from feedback_engine import FeedbackEngine
 app = FastAPI(title="Agency OS — Unified Command Center", version="1.0.0")
 
 # Separate authenticated, tenant-scoped API. Legacy routes remain unchanged.
-from agency_os_security import router as agency_os_router
+if __package__:
+    from .agency_os_security import router as agency_os_router
+else:
+    from agency_os_security import router as agency_os_router
 app.include_router(agency_os_router)
 
 import time as _time_mod
