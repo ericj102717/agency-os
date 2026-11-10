@@ -21,6 +21,20 @@ this module.
 7. SQL migration 003 tightens RLS write policies, constrains record assignees and
    audit actors to same-agency memberships, and makes audit events append-only.
 
+## Migration procedure
+
+Migrations are never run automatically during application startup. After confirming
+the target is a disposable/staging database and taking a restorable backup, run:
+
+```bash
+python backend/scripts/run_agency_os_migrations.py
+```
+
+The runner acquires a PostgreSQL advisory lock, applies 002 then 003 in separate
+transactions, records SHA-256 checksums, and stops on the first error. If an applied
+migration file changes, it refuses to continue; create a new migration instead.
+Do not run this against production as part of this iteration.
+
 ## Required environment
 
 - `SUPABASE_URL`: Supabase project URL
