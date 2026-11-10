@@ -43,6 +43,17 @@ class SecureTenantFoundationTests(unittest.TestCase):
                 require_agency_membership(agency_id, user, write=True)
         self.assertEqual(raised.exception.status_code, 403)
 
+    def test_user_without_agency_membership_is_denied(self):
+        agency_id = uuid4()
+        user = {"id": str(uuid4())}
+        with patch("backend.agency_os_security._database_connection") as connect:
+            connection = connect.return_value
+            cursor = connection.cursor.return_value.__enter__.return_value
+            cursor.fetchone.return_value = None
+            with self.assertRaises(HTTPException) as raised:
+                require_agency_membership(agency_id, user)
+        self.assertEqual(raised.exception.status_code, 404)
+
     def test_contact_payload_rejects_blank_first_name(self):
         with self.assertRaises(ValueError):
             ContactCreate(first_name="   ")
