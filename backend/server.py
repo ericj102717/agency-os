@@ -100,6 +100,13 @@ from feedback_engine import FeedbackEngine
 
 app = FastAPI(title="Agency OS — Unified Command Center", version="1.0.0")
 
+# Separate authenticated, tenant-scoped API. Legacy routes remain unchanged.
+if __package__:
+    from .agency_os_security import router as agency_os_router
+else:
+    from agency_os_security import router as agency_os_router
+app.include_router(agency_os_router)
+
 import time as _time_mod
 _SERVER_START_TIME = _time_mod.time()
 
@@ -124,7 +131,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=_allowed_origins,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "X-API-Key", "X-Command-Center-Write-Key", "X-Admin-Key"],
+    allow_headers=["Authorization", "Content-Type", "X-API-Key", "X-Command-Center-Write-Key", "X-Admin-Key"],
     allow_credentials=True,
 )
 
