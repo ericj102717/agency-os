@@ -37,6 +37,11 @@ as $
   );
 $;
 
+revoke all on function public.agency_os_is_member(uuid) from public;
+revoke all on function public.agency_os_is_admin(uuid) from public;
+grant execute on function public.agency_os_is_member(uuid) to authenticated;
+grant execute on function public.agency_os_is_admin(uuid) to authenticated;
+
 create or replace function public.agency_os_role(target_agency_id uuid)
 returns text
 language sql stable security definer
