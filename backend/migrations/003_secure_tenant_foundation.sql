@@ -155,7 +155,7 @@ comment on function public.agency_os_provision_workspace(text, text, text)
 create or replace function public.agency_os_validate_assignee()
 returns trigger language plpgsql
 set search_path = public, pg_temp
-as $
+as $$
 begin
   if new.assigned_to is not null and not exists (
     select 1 from public.agency_memberships m
@@ -168,9 +168,9 @@ begin
   end if;
   return new;
 end;
-$;
+$$;
 
-do $
+do $$
 declare
   table_name text;
 begin
@@ -185,5 +185,4 @@ begin
     );
   end loop;
 end;
-$;
-
+$$;
