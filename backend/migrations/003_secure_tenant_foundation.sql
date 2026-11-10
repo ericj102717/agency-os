@@ -12,14 +12,14 @@ language sql
 stable
 security definer
 set search_path = public, pg_temp
-as $
+as $$
   select exists (
     select 1 from public.agency_memberships m
     where m.agency_id = target_agency_id
       and m.user_id = auth.uid()
       and m.status = 'active'
   );
-$;
+$$;
 
 create or replace function public.agency_os_is_admin(target_agency_id uuid)
 returns boolean
@@ -27,7 +27,7 @@ language sql
 stable
 security definer
 set search_path = public, pg_temp
-as $
+as $$
   select exists (
     select 1 from public.agency_memberships m
     where m.agency_id = target_agency_id
@@ -35,7 +35,7 @@ as $
       and m.status = 'active'
       and m.role in ('owner','admin')
   );
-$;
+$$;
 
 revoke all on function public.agency_os_is_member(uuid) from public;
 revoke all on function public.agency_os_is_admin(uuid) from public;
