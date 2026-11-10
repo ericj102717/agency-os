@@ -23,6 +23,10 @@ def run() -> None:
     database_url = os.environ.get("DATABASE_URL", "")
     if not database_url:
         raise SystemExit("DATABASE_URL is required; no database was contacted.")
+    if os.environ.get("AGENCY_OS_MIGRATION_TARGET") != "staging":
+        raise SystemExit("Set AGENCY_OS_MIGRATION_TARGET=staging; production is blocked by this runner.")
+    if os.environ.get("AGENCY_OS_MIGRATION_CONFIRM") != "APPLY_AGENCY_OS_MIGRATIONS_TO_STAGING":
+        raise SystemExit("Explicit staging confirmation required; no database changes were made.")
 
     migrations_dir = Path(__file__).resolve().parent.parent / "migrations"
     connection = psycopg2.connect(database_url, connect_timeout=10)
