@@ -150,3 +150,40 @@ grant execute on function public.agency_os_provision_workspace(text, text, text)
 
 comment on function public.agency_os_provision_workspace(text, text, text)
   is 'Creates an agency workspace and makes auth.uid() its owner; caller identity is never accepted as an argument.';
+
+-- Assignment must target an active member, not merely a historical membership row.
+create or replace function public.agency_os_validate_assignee()
+returns trigger language plpgsql
+set search_path = public, pg_temp
+as $
+begin
+  if new.assigned_to is not null and not exists (
+    select 1 from public.agency_memberships m
+    where m.agency_id = new.agency_id
+      and m.user_id = new.assigned_to
+      and m.status = 'active'
+  ) then
+    raise exception 'assigned_to must be an active member of this agency'
+      using errcode = '23514';
+  end if;
+  return new;
+end;
+$;
+
+do $
+declare
+  table_name text;
+begin
+  foreach table_name in array array[
+    'agency_leads','agency_clients','agency_opportunities','agency_tasks'
+  ]
+  loop
+    execute format('drop trigger if exists %I_active_assignee on public.%I', table_name, table_name);
+    execute format(
+      'create trigger %I_active_assignee before insert or update of assigned_to, agency_id on public.%I for each row execute function public.agency_os_validate_assignee()',
+      table_name, table_name
+    );
+  end loop;
+end;
+$;
+
