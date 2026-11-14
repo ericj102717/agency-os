@@ -27,6 +27,7 @@ import { SettingsPage } from "@/pages/settings";
 import { TrainingPage } from "@/pages/training";
 import { ActionsPage } from "@/pages/actions";
 import { ClientActivityPage } from "@/pages/client-activity";
+import AgencyOSPrototype from "@/pages/agency-os-prototype";
 import NotFound from "@/pages/not-found";
 
 function AppLayout({ children }: { children: React.ReactNode }) {
@@ -35,9 +36,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar />
-        <main className="flex-1 overflow-y-auto p-6">
-          {children}
-        </main>
+        <main className="flex-1 overflow-y-auto p-6">{children}</main>
       </div>
       <ActionModals />
       <WriteKeyGate />
@@ -48,21 +47,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
 function AppRouter() {
   const { user, loading, isAuthEnabled } = useAuth();
-
-  // Show loading spinner while checking auth
+  if (window.location.hash.includes("/prototype")) return <AgencyOSPrototype />;
   if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
-      </div>
-    );
+    return <div className="flex h-screen items-center justify-center bg-background"><div className="animate-pulse text-muted-foreground">Loading...</div></div>;
   }
-
-  // Auth gate — if auth is enabled and user is not signed in, show login
-  if (isAuthEnabled && !user) {
-    return <LoginPage />;
-  }
-
+  if (isAuthEnabled && !user) return <LoginPage />;
   return (
     <AppLayout>
       <Switch>
@@ -93,13 +82,9 @@ function App() {
       <ThemeProvider>
         <TooltipProvider>
           <Toaster />
-          <Router hook={useHashLocation}>
-            <AppRouter />
-          </Router>
+          <Router hook={useHashLocation}><AppRouter /></Router>
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
 }
-
-export default App;
